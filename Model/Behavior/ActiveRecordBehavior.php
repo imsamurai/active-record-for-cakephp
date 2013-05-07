@@ -1,5 +1,7 @@
 <?php
 
+App::uses('ModelBehavior', 'Model');
+
 class ActiveRecordException extends Exception {
    public function  __construct($message) {
       $trace = debug_backtrace();
@@ -7,7 +9,7 @@ class ActiveRecordException extends Exception {
          $message .
          ' in ' . $trace[1]['file'] .
          ' on line ' . $trace[1]['line']);
-      
+
    }
 }
 
@@ -146,7 +148,7 @@ class _ActiveRecordAssociation {
             break;
          }
       }
-      
+
       if ($checked) {
          switch ($this->type) {
             case 'belongsTo':
@@ -163,7 +165,7 @@ class _ActiveRecordAssociation {
                if (!empty($this->definition['deleteWhenNotAssociated'])) {
                    $active_record->delete(true);
                } else {
-                   $active_record->setChanged();               
+                   $active_record->setChanged();
                }
                break;
             case 'hasAndBelongsToMany':
@@ -822,7 +824,7 @@ class ActiveRecord {
          $this->_resetState();
          return true;
       } else {
-         CakeLog::write('ActiverRecord', 'save did nod succeed for record ' . print_r($record, true) . ' with model ' . $this->_model->alias . 
+         CakeLog::write('ActiverRecord', 'save did nod succeed for record ' . print_r($record, true) . ' with model ' . $this->_model->alias .
                  '. Error: ' . print_r($this->_model->validationErrors, true));
          return false;
       }
@@ -881,7 +883,7 @@ class ActiveRecordBehavior extends ModelBehavior {
             } else {
                $records = array();
             }
-            
+
          } else if ($model->findQueryType == 'all') {
             $records = array();
             foreach($results as $result) {

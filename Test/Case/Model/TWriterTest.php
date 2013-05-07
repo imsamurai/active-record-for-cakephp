@@ -1,5 +1,6 @@
 <?php
-App::uses('TWriter', 'Model');
+require_once dirname(__FILE__) . DS . 'models.php';
+require_once dirname(__FILE__) . DS . 'active_records.php';
 
 /**
  * Writer Test Case
@@ -11,7 +12,14 @@ class TWriterTestCase extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.t_writer_group', 'app.t_writer', 'app.t_profile', 'app.t_post', 'app.t_join_post_tag', 'app.t_tag');
+	public $fixtures = array(
+		'plugin.ActiveRecord.t_writer_group',
+		'plugin.ActiveRecord.t_writer',
+		'plugin.ActiveRecord.t_profile',
+		'plugin.ActiveRecord.t_post',
+		'plugin.ActiveRecord.t_join_post_tag',
+		'plugin.ActiveRecord.t_tag'
+		);
 
 /**
  * setUp method
@@ -92,7 +100,7 @@ class TWriterTestCase extends CakeTestCase {
       $this->assertInstanceOf('ARTWriterGroup', $writer_group);
       $this->_checkARTWriterGroup($writer_group, '1', 'Group1');
    }
-   
+
    public function testPoolAndBelongsTo() {
       ActiveRecord::clearPool();
       $writer_org = $this->TWriter->find('first', array('contain' => array('WriterGroup'), 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
