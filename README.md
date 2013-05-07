@@ -1,5 +1,7 @@
 Active Record for CakePHP
 =========================
+WARNING: code currently under refactoring, release will be soon
+====================================================
 
 Installation
 ------------
