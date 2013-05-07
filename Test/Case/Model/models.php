@@ -23,7 +23,7 @@ class AppModel extends Model {
 		'Containable',
 		'ActiveRecord.ActiveRecord' => array('allFind' => false, 'directDelete' => true));
 
-	public function beforeSave() {
+	public function beforeSave($options = array()) {
 		if (!empty($this->data[$this->alias]['timestamp']) && $this->data[$this->alias]['timestamp'] == 'CURRENT_TIMESTAMP')
 			unset($this->data[$this->alias]['timestamp']);
 		return true;

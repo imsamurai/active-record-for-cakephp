@@ -10,7 +10,7 @@ class ActiveRecordBehavior extends ModelBehavior {
 	public static $directDelete = false;
 	public $runtime = array();
 
-	public function setup(Model $model, $settings) {
+	public function setup(Model $model, $settings = array()) {
 		if (isset($settings['directDelete'])) {
 			self::$directDelete = $settings['directDelete'];
 			unset($settings['directDelete']);
@@ -43,7 +43,7 @@ class ActiveRecordBehavior extends ModelBehavior {
 		}
 	}
 
-	public function afterFind(Model $model, array $results, $primary) {
+	public function afterFind(Model $model, $results, $primary) {
 		$records = $results;
 		if ($this->runtime[$model->name]['activeRecord']) {
 			if ($model->findQueryType == 'first') {
