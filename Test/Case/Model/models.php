@@ -17,7 +17,7 @@ App::uses('Model', 'Model');
  *
  * @package       app.Model
  */
-class AppModel extends Model {
+class ActiveRecordAppModel extends Model {
 
 	public $actsAs = array(
 		'Containable',
@@ -37,7 +37,7 @@ class AppModel extends Model {
  * @property Writer $Writer
  * @property JoinPostTag $JoinPostTag
  */
-class TJoinPostTag extends AppModel {
+class TJoinPostTag extends ActiveRecordAppModel {
 
 }
 
@@ -47,7 +47,7 @@ class TJoinPostTag extends AppModel {
  * @property Writer $Writer
  * @property JoinPostTag $JoinPostTag
  */
-class TPost extends AppModel {
+class TPost extends ActiveRecordAppModel {
 
 	/**
 	 * Use database config
@@ -110,7 +110,7 @@ class TPost extends AppModel {
  *
  * @property Writer $Writer
  */
-class TComment extends AppModel {
+class TComment extends ActiveRecordAppModel {
 	/**
 	 * Use database config
 	 *
@@ -139,7 +139,7 @@ class TComment extends AppModel {
  *
  * @property Writer $Writer
  */
-class TProfile extends AppModel {
+class TProfile extends ActiveRecordAppModel {
 
 	/**
 	 * Use database config
@@ -172,7 +172,7 @@ class TProfile extends AppModel {
  *
  * @property JoinPost $JoinPost
  */
-class TTag extends AppModel {
+class TTag extends ActiveRecordAppModel {
 
 	/**
 	 * Use database config
@@ -222,7 +222,7 @@ class TTag extends AppModel {
  * @property WriterGroup $WriterGroup
  * @property Post $Post
  */
-class TWriter extends AppModel {
+class TWriter extends ActiveRecordAppModel {
 
 	/**
 	 * Use database config
@@ -298,7 +298,7 @@ class TWriter extends AppModel {
  *
  * @property Writer $Writer
  */
-class TWriterGroup extends AppModel {
+class TWriterGroup extends ActiveRecordAppModel {
 
 	/**
 	 * Use database config
