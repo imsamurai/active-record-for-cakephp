@@ -23,29 +23,29 @@ class ActiveRecordBehavior extends ModelBehavior {
 			self::$subfolder = $settings['subfolder'];
 			unset($settings['subfolder']);
 		}
-		if (!isset($this->settings[$model->name])) {
-			$this->settings[$model->name] = array(
+		if (!isset($this->settings[$model->alias])) {
+			$this->settings[$model->alias] = array(
 				'allFind' => true,
 			);
 		}
-		$this->settings[$model->name] = array_merge(
-				$this->settings[$model->name], (array) $settings);
+		$this->settings[$model->alias] = array_merge(
+				$this->settings[$model->alias], (array) $settings);
 	}
 
 	public function beforeFind(Model $model, $query) {
-		$this->runtime[$model->name]['activeRecord'] = false;
+		$this->runtime[$model->alias]['activeRecord'] = false;
 
 		if ((isset($query['activeRecord']) && $query['activeRecord'] == true) ||
-				(!isset($query['activeRecord']) && $this->settings[$model->name]['allFind'])) {
+				(!isset($query['activeRecord']) && $this->settings[$model->alias]['allFind'])) {
 			if ($model->findQueryType == 'first' || $model->findQueryType == 'all') {
-				$this->runtime[$model->name]['activeRecord'] = true;
+				$this->runtime[$model->alias]['activeRecord'] = true;
 			}
 		}
 	}
 
 	public function afterFind(Model $model, $results, $primary) {
 		$records = $results;
-		if ($this->runtime[$model->name]['activeRecord']) {
+		if ($this->runtime[$model->alias]['activeRecord']) {
 			if ($model->findQueryType == 'first') {
 				// The afterFind callback is called before that the find method refines the result to 1 row.
 				if (count($results) > 0) {

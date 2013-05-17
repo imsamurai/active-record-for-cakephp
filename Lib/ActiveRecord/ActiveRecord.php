@@ -31,16 +31,16 @@ class ActiveRecord {
 	}
 
 	public static function findActiveRecordInPool(Model $model, $id) {
-		if (isset(self::$active_records_pool[$model->name]['records'][$id])) {
-			return self::$active_records_pool[$model->name]['records'][$id];
+		if (isset(self::$active_records_pool[$model->alias]['records'][$id])) {
+			return self::$active_records_pool[$model->alias]['records'][$id];
 		} else {
 			return false;
 		}
 	}
 
 	public static function findActiveRecordInPoolWithSecondaryKey(Model $model, $key, $value) {
-		if (isset(self::$active_records_pool[$model->name])) {
-			foreach (self::$active_records_pool[$model->name]['records'] as $record) {
+		if (isset(self::$active_records_pool[$model->alias])) {
+			foreach (self::$active_records_pool[$model->alias]['records'] as $record) {
 				if ($record->{$key} == $value) {
 					return $record;
 				}
@@ -85,10 +85,10 @@ class ActiveRecord {
 			}
 			$options = array('model' => $model, 'create' => false);
 			$result = new $active_record_class_properties['active_record_name']($active_record_class_properties['record'], $options);
-			if (!isset(self::$active_records_pool[$model->name])) {
-				self::$active_records_pool[$model->name] = array('records' => array(), 'model' => $model, 'data_source_name' => $model->useDbConfig);
+			if (!isset(self::$active_records_pool[$model->alias])) {
+				self::$active_records_pool[$model->alias] = array('records' => array(), 'model' => $model, 'data_source_name' => $model->useDbConfig);
 			}
-			self::$active_records_pool[$model->name]['records'][$id] = $result;
+			self::$active_records_pool[$model->alias]['records'][$id] = $result;
 		} else {
 			$result->refresh($record, $model->alias);
 		}
