@@ -56,8 +56,8 @@ class ActiveRecord {
 		}
 
 		if ($result === false) {
-			$active_record_name = ActiveRecordBehavior::$prefix . $model->name;
-			App::import('Model' . ActiveRecordBehavior::$subfolder, $active_record_name);
+			$active_record_name = $model->activeRecordBehaviorSettings('prefix') . $model->name;
+			App::import('Model' . $model->activeRecordBehaviorSettings('subfolder'), $active_record_name);
 			if (!class_exists($active_record_name)) {
 				$active_record_name = 'ActiveRecord';
 			}
@@ -90,7 +90,7 @@ class ActiveRecord {
 			}
 			self::$active_records_pool[$model->alias]['records'][$id] = $result;
 		} else {
-			$result->refresh($record, $model->alias);
+			$result->refresh($record);
 		}
 		return $result;
 	}
@@ -149,8 +149,9 @@ class ActiveRecord {
 				$model_name = $this->model_name;
 			} else {
 				$class_name = get_class($this);
-				if (substr($class_name, 0, strlen(ActiveRecordBehavior::$prefix)) == ActiveRecordBehavior::$prefix) {
-					$model_name = substr($class_name, strlen(ActiveRecordBehavior::$prefix));
+				$prefix = ActiveRecordBehavior::$defaultSettings['prefix'];
+				if (substr($class_name, 0, strlen($prefix)) == $prefix) {
+					$model_name = substr($class_name, strlen($prefix));
 				} else {
 					$model_name = $class_name;
 				}
@@ -163,7 +164,7 @@ class ActiveRecord {
 		} else {
 			$this->_record = $record;
 		}
-		$this->_direct_delete = ActiveRecordBehavior::$directDelete;
+		$this->_direct_delete = $this->_model->activeRecordBehaviorSettings('directDelete');
 		if (isset($options['directDelete'])) {
 			$this->_direct_delete = $options['directDelete'];
 		}

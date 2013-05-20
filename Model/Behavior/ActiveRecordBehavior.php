@@ -5,31 +5,23 @@ App::uses('ActiveRecord', 'ActiveRecord.Lib/ActiveRecord');
 
 class ActiveRecordBehavior extends ModelBehavior {
 
-	public static $prefix = 'AR';
-	public static $subfolder = '\\ActiveRecord';
-	public static $directDelete = false;
+	public static $defaultSettings = array(
+		'allFind' => true,
+			'directDelete' => false,
+			'prefix' => 'AR',
+			'subfolder' => '\\ActiveRecord'
+	);
 	public $runtime = array();
 
 	public function setup(Model $model, $settings = array()) {
-		if (isset($settings['directDelete'])) {
-			self::$directDelete = $settings['directDelete'];
-			unset($settings['directDelete']);
+		$this->settings[$model->alias] = $settings + static::$defaultSettings;
+	}
+
+	public function activeRecordBehaviorSettings(Model $model, $setting = null) {
+		if ($setting) {
+			return $this->settings[$model->alias][$setting];
 		}
-		if (isset($settings['prefix'])) {
-			self::$prefix = $settings['prefix'];
-			unset($settings['prefix']);
-		}
-		if (isset($settings['subfolder'])) {
-			self::$subfolder = $settings['subfolder'];
-			unset($settings['subfolder']);
-		}
-		if (!isset($this->settings[$model->alias])) {
-			$this->settings[$model->alias] = array(
-				'allFind' => true,
-			);
-		}
-		$this->settings[$model->alias] = array_merge(
-				$this->settings[$model->alias], (array) $settings);
+		return $this->settings[$model->alias];
 	}
 
 	public function beforeFind(Model $model, $query) {
