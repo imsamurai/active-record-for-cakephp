@@ -130,10 +130,10 @@ Then in the Action model, I have added this function:
 
     public function getActiveRecordProperties(&$record) {
       $type = $record[$this->alias]['type'];
-      $active_record_name = 'AR' . $type . 'Action';
+      $name = 'AR' . $type . 'Action';
       $model = $this;
-      App::import('Model\ActiveRecord', $active_record_name);
-      return array('active_record_name' => $active_record_name, 'record' => $record, 'model' => $model);
+      App::import('Model\ActiveRecord', $name);
+      return array('name' => $name, 'Record' => $record, 'Model' => $model);
     }
 
 My ARAction looks like this:

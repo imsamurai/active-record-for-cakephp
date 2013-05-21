@@ -14,20 +14,20 @@ class ActiveRecordAssociationCollection implements IteratorAggregate, Countable,
    }
 
    public function getIterator() {
-      $result = new ArrayObject($this->_association->associated_active_records);
+      $result = new ArrayObject($this->_association->getAssociated());
       return $result->getIterator();
    }
 
    public function count() {
-      return count($this->_association->associated_active_records);
+      return count($this->_association->getAssociated());
    }
 
    public function offsetSet($offset, $value) {
       if (is_null($offset)) {
          $this->add($value);
       } else {
-         if (isset($this->_association->associated_active_records[$offset])) {
-            $this->replace($this->_association->associated_active_records[$offset], $value);
+         if (isset($this->_association->getAssociated()[$offset])) {
+            $this->replace($this->_association->getAssociated()[$offset], $value);
          } else {
             $this->add($value);
          }
@@ -35,17 +35,17 @@ class ActiveRecordAssociationCollection implements IteratorAggregate, Countable,
    }
 
    public function offsetExists($offset) {
-      return isset($this->_association->associated_active_records[$offset]);
+      return isset($this->_association->getAssociated()[$offset]);
    }
 
    public function offsetUnset($offset) {
-      if (isset($this->_association->associated_active_records[$offset])) {
-         $this->remove($this->_association->associated_active_records[$offset]);
+      if (isset($this->_association->getAssociated()[$offset])) {
+         $this->remove($this->_association->getAssociated()[$offset]);
       }
    }
 
    public function offsetGet($offset) {
-      return isset($this->_association->associated_active_records[$offset]) ? $this->_association->associated_active_records[$offset] : null;
+      return isset($this->_association->getAssociated()[$offset]) ? $this->_association->getAssociated()[$offset] : null;
    }
 
    public function add(ActiveRecord $active_record = null) {

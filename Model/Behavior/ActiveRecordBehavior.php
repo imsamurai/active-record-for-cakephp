@@ -1,6 +1,7 @@
 <?php
 
 App::uses('ModelBehavior', 'Model');
+App::uses('ActiveRecordManager', 'ActiveRecord.Lib/ActiveRecord');
 App::uses('ActiveRecord', 'ActiveRecord.Lib/ActiveRecord');
 
 class ActiveRecordBehavior extends ModelBehavior {
@@ -41,14 +42,14 @@ class ActiveRecordBehavior extends ModelBehavior {
 			if ($model->findQueryType == 'first') {
 				// The afterFind callback is called before that the find method refines the result to 1 row.
 				if (count($results) > 0) {
-					$records = array(ActiveRecord::getActiveRecord($model, $results[0]));
+					$records = array(ActiveRecordManager::getActiveRecord($model, $results[0]));
 				} else {
 					$records = array();
 				}
 			} else if ($model->findQueryType == 'all') {
 				$records = array();
 				foreach ($results as $result) {
-					$records[] = ActiveRecord::getActiveRecord($model, $result);
+					$records[] = ActiveRecordManager::getActiveRecord($model, $result);
 				}
 			}
 		}

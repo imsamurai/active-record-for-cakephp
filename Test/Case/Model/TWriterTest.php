@@ -62,7 +62,7 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testActiveRecordFalse() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writers = $this->TWriter->find('all', array('recursive' => -1, 'activeRecord' => false));
       foreach ($writers as $writer) {
          $this->assertInternalType('array', $writer);
@@ -70,7 +70,7 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testFindAll() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writers = $this->TWriter->find('all', array('recursive' => -1, 'activeRecord' => true));
       foreach ($writers as $id => $writer) {
          $this->assertInstanceOf('ARTWriter', $writer);
@@ -79,14 +79,14 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testFindFirst() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
       $this->assertInstanceOf('ARTWriter', $writer);
       $this->_checkARTWriter($writer, 1, 'Name1', 1);
    }
 
    public function testAssociationBelongsToDirect() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writer = $this->TWriter->find('first', array('contain' => array('WriterGroup'), 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
       $writer_group = $writer->WriterGroup;
       $this->assertInstanceOf('ARTWriterGroup', $writer_group);
@@ -94,7 +94,7 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testAssociationBelongsToIndirect() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
       $writer_group = $writer->WriterGroup;
       $this->assertInstanceOf('ARTWriterGroup', $writer_group);
@@ -102,7 +102,7 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testPoolAndBelongsTo() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writer_org = $this->TWriter->find('first', array('contain' => array('WriterGroup'), 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
       $writer_org->name = 'Test';
       $writer_org->WriterGroup->name = 'Test';
@@ -114,7 +114,7 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testAssociationHasOneDirect() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writer = $this->TWriter->find('first', array('contain' => array('Profile'), 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
       $profile = $writer->Profile;
       $this->assertInstanceOf('ARTProfile', $profile);
@@ -122,7 +122,7 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testAssociationHasOneIndirect() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
       $profile = $writer->Profile;
       $this->assertInstanceOf('ARTProfile', $profile);
@@ -130,7 +130,7 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testPoolAndHasOne() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writer_org = $this->TWriter->find('first', array('contain' => array('Profile'), 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
       $writer_org->name = 'Test';
       $writer_org->Profile->gender = 2;
@@ -142,7 +142,7 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testAssociationHasManyDirect() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writer = $this->TWriter->find('first', array('contain' => array('Posts'), 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
       $posts = $writer->Posts;
       foreach ($posts as $id => $post) {
@@ -152,7 +152,7 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testAssociationHasManyIndirect() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
       $posts = $writer->Posts;
       $id = 1;
@@ -164,7 +164,7 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testPoolAndHasMany() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writer_org = $this->TWriter->find('first', array('contain' => array('Posts'), 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
       $writer_org->name = 'Test';
       foreach ($writer_org->Posts as $post) {
@@ -224,13 +224,13 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testAssociationHBTMDirect() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $posts = $this->TWriter->Posts->find('all', array('contain' => array('Tags'), 'activeRecord' => true));
       $this->_testHBTM($posts);
    }
 
    public function testAssociationHBTMIndirect() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $posts = $this->TWriter->Posts->find('all', array('recursive' => -1, 'activeRecord' => true));
       $this->_testHBTM($posts);
    }
@@ -254,13 +254,13 @@ class TWriterTestCase extends CakeTestCase {
    }
 
    public function testDeepAssociationDirect() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writer = $this->TWriter->find('first', array('contain' => array('Posts.Tags'), 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
       $this->_testDeepAssociation($writer);
    }
 
    public function testDeepAssociationIndirect() {
-      ActiveRecord::clearPool();
+      ActiveRecordManager::clearPool();
       $writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
       $this->_testDeepAssociation($writer);
    }
