@@ -81,7 +81,7 @@ abstract class ActiveRecordAssociationType {
 //
 //	abstract public function refresh($records);
 //
-	public function associatedRecordsFWithRecords($records) {
+	public function associatedRecordsWithRecords($records) {
 		$associated_records = array();
 		switch (true) {
 			case $this->isHasOne():

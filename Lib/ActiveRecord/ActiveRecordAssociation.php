@@ -29,8 +29,7 @@ class ActiveRecordAssociation {
 		$this->_record = $Record;
 		$this->_type = $type;
 
-		$reference_model = $Record->getModel();
-		$this->_model = $reference_model->{$name};
+		$this->_model = $Record->getModel()->{$name};
 		$this->_definition = $definition;
 		$this->_associated = array();
 
@@ -94,8 +93,8 @@ class ActiveRecordAssociation {
 		$this->_setAssociatedRecordsWithForeignKeys($activeRecords, true);
 	}
 
-	public function setForeignKey(ActiveRecord $active_record = null) {
-		$this->_AssociationStrategy->setForeignKey($active_record);
+	public function setForeignKey(ActiveRecord $Record = null) {
+		$this->_AssociationStrategy->setForeignKey($Record);
 	}
 
 	public function addAssociatedRecord(ActiveRecord $active_record) {
@@ -108,12 +107,12 @@ class ActiveRecordAssociation {
 		$this->_changed = true;
 	}
 
-	public function removeAssociatedRecord(ActiveRecord $active_record, $reset_keys = true) {
+	public function removeAssociatedRecord(ActiveRecord $Record, $resetKeys = true) {
 		$checked = false;
-		$record_to_be_removed = &$active_record->getRecord();
-		foreach ($this->_associated as $key => $Record) {
-			$associated_record = &$Record->getRecord();
-			if ($associated_record === $record_to_be_removed) {
+		$record = &$Record->getRecord();
+		foreach ($this->_associated as $key => $AssociatedRecord) {
+			$associatedRecord = &$AssociatedRecord->getRecord();
+			if ($associatedRecord === $record) {
 				$checked = true;
 				break;
 			}
@@ -123,8 +122,8 @@ class ActiveRecordAssociation {
 			return;
 		}
 		unset($this->_associated[$key]);
-		$this->_AssociationStrategy->removeAssociatedRecord($active_record);
-		if ($reset_keys) {
+		$this->_AssociationStrategy->removeAssociatedRecord($Record);
+		if ($resetKeys) {
 			$this->_associated = array_values($this->_associated);
 		}
 		$this->_changed = true;
@@ -161,13 +160,13 @@ class ActiveRecordAssociation {
 					$this->_associated = array($active_record);
 				}
 			} else {
-				$old_records = array();
+				$oldRecords = array();
 				foreach ($this->_associated as $Record) {
-					$old_records[$Record->{$this->_model->primaryKey}] = $Record;
+					$oldRecords[$Record->{$this->_model->primaryKey}] = $Record;
 				}
 				$result = array();
 				foreach ($records as $record) {
-					if (array_key_exists($record[$this->_model->primaryKey], $old_records)) {
+					if (array_key_exists($record[$this->_model->primaryKey], $oldRecords)) {
 						$result[] = $Record->refresh($record);
 					} else {
 						$result[] = ActiveRecordManager::getActiveRecord($this->_model, $record);
@@ -182,12 +181,12 @@ class ActiveRecordAssociation {
 	}
 
 	protected function _initializeWithRecord($records, $checkRecords = false) {
-		$associated_records = $this->_AssociationStrategy->associatedRecordsFWithRecords($records);
+		$associatedRecords = $this->_AssociationStrategy->associatedRecordsWithRecords($records);
 
 		if ($checkRecords) {
-			$this->_setAssociatedRecordsWithForeignKeys($associated_records);
+			$this->_setAssociatedRecordsWithForeignKeys($associatedRecords);
 		} else {
-			$this->_associated = $associated_records;
+			$this->_associated = $associatedRecords;
 		}
 		$this->_changed = false;
 		$this->_initialized = true;

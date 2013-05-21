@@ -12,23 +12,23 @@ class ActiveRecordAssociationBelongsTo extends ActiveRecordAssociationType {
 
 	const TYPE = 'belongsTo';
 
-	public function setForeignKey(ActiveRecord $active_record = null) {
+	public function setForeignKey(ActiveRecord $Record = null) {
 		$foreignKey = $this->_Association->getDefinition('foreignKey');
 		$reference_record = &$this->_Association->getRecord()->getRecord();
-		if ($active_record == null) {
+		if ($Record == null) {
 			$reference_record[$foreignKey] = '';
 		} else {
-			$associated_record = &$active_record->getRecord();
-			if (isset($associated_record[$active_record->getModel()->primaryKey])) {
-				$reference_record[$foreignKey] = $associated_record[$active_record->getModel()->primaryKey];
+			$associated_record = &$Record->getRecord();
+			if (isset($associated_record[$Record->getModel()->primaryKey])) {
+				$reference_record[$foreignKey] = $associated_record[$Record->getModel()->primaryKey];
 			} else {
-				$active_record->addForeignKey($this->_Association, $active_record);
+				$Record->addForeignKey($this->_Association, $Record);
 			}
 		}
 		$this->_Association->getRecord()->setChanged();
 	}
 
-	public function removeAssociatedRecord(ActiveRecord $active_record) {
+	public function removeAssociatedRecord(ActiveRecord $Record) {
 		$reference_record = &$this->_Association->getRecord()->getRecord();
 		$reference_record[$this->_Association->getDefinition('foreignKey')] = null;
 		$this->_Association->getRecord()->setChanged();
