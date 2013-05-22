@@ -12,7 +12,7 @@ App::uses('ActiveRecordAssociation', 'ActiveRecord.Lib/ActiveRecord');
 class ActiveRecord {
 
 	private $_Model;
-	private $_record = array();
+	private $_Record = array();
 	private $_originalRecord = array();
 	private $_associations = array();  // Associated array: association name => _ActiveRecordAssociation object
 	private $_changed = false;
@@ -41,9 +41,9 @@ class ActiveRecord {
 			$this->_Model = ClassRegistry::init($modelName);
 		}
 		if (isset($record[$this->_Model->alias])) {
-			$this->_record = $record[$this->_Model->alias];
+			$this->_Record = $record[$this->_Model->alias];
 		} else {
-			$this->_record = $record;
+			$this->_Record = $record;
 		}
 		$this->_directDelete = $this->_Model->activeRecordBehaviorSettings('directDelete');
 		if (isset($options['directDelete'])) {
@@ -63,11 +63,11 @@ class ActiveRecord {
 			foreach ($this->_Model->{$association_type} as $association_name => $association_definition) {
 				$association = new ActiveRecordAssociation($association_name, $this, $association_type, $association_definition, $record, $create);
 				$this->_associations[$association_name] = $association;
-				unset($this->_record[$association_name]);
+				unset($this->_Record[$association_name]);
 			}
 		}
 
-		foreach ($this->_record as $key => $value) {
+		foreach ($this->_Record as $key => $value) {
 			$this->_originalRecord[$key] = $value;
 		}
 	}
@@ -75,8 +75,8 @@ class ActiveRecord {
 	public function __get($name) {
 		if (array_key_exists($name, $this->_associations)) {
 			return $this->_associations[$name]->getActiveRecords();
-		} else if (array_key_exists($name, $this->_record)) {
-			return $this->_record[$name];
+		} else if (array_key_exists($name, $this->_Record)) {
+			return $this->_Record[$name];
 		}
 
 		throw new ActiveRecordException('Undefined property via __get(): ' . $name);
@@ -85,8 +85,8 @@ class ActiveRecord {
 	public function __set($name, $value) {
 		if (array_key_exists($name, $this->_associations)) {
 			$this->_associations[$name]->setAssociatedRecords($value);
-		} else if (array_key_exists($name, $this->_record)) {
-			$this->_record[$name] = $value;
+		} else if (array_key_exists($name, $this->_Record)) {
+			$this->_Record[$name] = $value;
 			$this->setChanged();
 		} else {
 			throw new ActiveRecordException('Undefined property via __set(): ' . $name);
@@ -94,7 +94,7 @@ class ActiveRecord {
 	}
 
 	public function __isset($name) {
-		return array_key_exists($name, $this->_associations) || array_key_exists($name, $this->_record);
+		return array_key_exists($name, $this->_associations) || array_key_exists($name, $this->_Record);
 	}
 
 	public function saveAll() {
@@ -111,9 +111,9 @@ class ActiveRecord {
 				$alias = $this->_Model->alias;
 			}
 			if (isset($record[$alias])) {
-				$this->_record = $record[$alias];
+				$this->_Record = $record[$alias];
 			} else {
-				$this->_record = $record;
+				$this->_Record = $record;
 			}
 
 			foreach ($this->_associations as $association_name => $association) {
@@ -124,11 +124,11 @@ class ActiveRecord {
 				}
 			}
 			$this->_resetState();
-		} else if (!empty($this->_record[$this->_Model->primaryKey])) {
+		} else if (!empty($this->_Record[$this->getPrimaryKey()])) {
 			$record = $this->_Model->find('first', array(
 				'recursive' => -1,
-				'conditions' => array($this->_Model->primaryKey => $this->_record[$this->_Model->primaryKey])));
-			$this->_record = $record[$this->_Model->alias];
+				'conditions' => array($this->getPrimaryKey() => $this->_Record[$this->getPrimaryKey()])));
+			$this->_Record = $record[$this->_Model->alias];
 			foreach ($this->_associations as $association) {
 				$association->setInitialized(false);
 			}
@@ -146,7 +146,7 @@ class ActiveRecord {
 	}
 
 	public function &getRecord() {
-		return $this->_record;
+		return $this->_Record;
 	}
 
 	public function setChanged($changed = true) {
@@ -179,7 +179,7 @@ class ActiveRecord {
 
 	public function undo() {
 		foreach ($this->_originalRecord as $key => $value) {
-			$this->_record[$key] = $value;
+			$this->_Record[$key] = $value;
 		}
 		foreach ($this->_associations as $association) {
 			$association->setInitialized(false);
@@ -241,7 +241,7 @@ class ActiveRecord {
 			$this->_create(); // This reset the _changed property
 		}
 
-		$record = array($this->_Model->alias => $this->_record);
+		$record = array($this->_Model->alias => $this->_Record);
 		foreach ($this->_associations as $association) {
 			if ($association->isChanged() && $association->isHasAndBelongsToMany()) {
 				$this->_changed = true;
@@ -252,7 +252,7 @@ class ActiveRecord {
 					if (!is_null($association->getDefinition('joinTable')) && !is_null($association->getDefinition('foreignKey'))) {
 						$this->_Model->getDataSource()->execute(
 								'DELETE FROM ' . $association->getDefinition('joinTable') .
-								' WHERE ' . $association->getDefinition('foreignKey') . ' = ' . $this->_record[$this->_Model->primaryKey]);
+								' WHERE ' . $association->getDefinition('foreignKey') . ' = ' . $this->_Record[$this->getPrimaryKey()]);
 					} else {
 						// This should work according to CakePHP doc, but not with my version.
 						$records[$association->getName()] = array();
@@ -274,7 +274,7 @@ class ActiveRecord {
 		}
 
 		if ($result = $this->_Model->save($record)) {
-			$this->_record = $result[$this->_Model->alias];
+			$this->_Record = $result[$this->_Model->alias];
 			$this->_resetState();
 			return true;
 		} else {
@@ -290,16 +290,16 @@ class ActiveRecord {
 		$this->_created = false;
 		$this->_removedFromAssociation = false;
 		$this->_originalRecord = array();
-		foreach ($this->_record as $key => $value) {
+		foreach ($this->_Record as $key => $value) {
 			$this->_originalRecord[$key] = $value;
 		}
 	}
 
 	protected function _create() {
 		$this->_Model->create();
-		$result = $this->_Model->save($this->_record);
+		$result = $this->_Model->save($this->_Record);
 		if ($result) {
-			$this->_record = $result[$this->_Model->alias];
+			$this->_Record = $result[$this->_Model->alias];
 			ActiveRecordManager::add($this);
 			$this->_resetState();
 			foreach ($this->_foreignKeys as $foreignKey) {
@@ -317,9 +317,9 @@ class ActiveRecord {
 			$model = $this->_Model;
 			if ($this->_directDelete) {
 				// This avoid 2 select statements
-				$result = $model->getDataSource()->delete($model, array($model->alias . '.' . $model->primaryKey => $this->_record[$model->primaryKey]));
+				$result = $model->getDataSource()->delete($model, array($model->alias . '.' . $model->primaryKey => $this->_Record[$model->primaryKey]));
 			} else {
-				$result = $model->delete($this->_record[$model->primaryKey]);
+				$result = $model->delete($this->_Record[$model->primaryKey]);
 			}
 		} else {
 			ActiveRecordManager::remove($this);
