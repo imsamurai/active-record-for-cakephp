@@ -12,7 +12,7 @@ abstract class ActiveRecordManager {
 	private static $_pendingCreate = array();
 
 	public static function delete(ActiveRecord $Record) {
-		unset(self::$_pool[$Record->getModel()->name][$Record->getModel()->primaryKey]);
+		unset(self::$_pool[$Record->getModel()->name][$Record->getPrimaryKey()]);
 	}
 
 	public static function add(ActiveRecord $Record) {
@@ -21,7 +21,7 @@ abstract class ActiveRecordManager {
 		if (!isset(self::$_pool[$poolName])) {
 			self::$_pool[$poolName] = array('records' => array(), 'model' => $Record->getModel(), 'sourceName' => $Record->getModel()->useDbConfig);
 		}
-		$id = $Record->getRecord()[$Record->getModel()->primaryKey];
+		$id = $Record->getRecord()[$Record->getPrimaryKey()];
 		static::$_pool[$poolName]['records'][$id] = $Record;
 	}
 
@@ -45,17 +45,17 @@ abstract class ActiveRecordManager {
 		self::$_pool = array();
 	}
 
-	public static function findActiveRecordInPool(Model $model, $id) {
-		if (isset(self::$_pool[$model->alias]['records'][$id])) {
-			return self::$_pool[$model->alias]['records'][$id];
+	public static function findActiveRecordInPool(Model $Model, $id) {
+		if (isset(self::$_pool[$Model->alias]['records'][$id])) {
+			return self::$_pool[$Model->alias]['records'][$id];
 		} else {
 			return false;
 		}
 	}
 
-	public static function findActiveRecordInPoolWithSecondaryKey(Model $model, $key, $value) {
-		if (isset(self::$_pool[$model->alias])) {
-			foreach (self::$_pool[$model->alias]['records'] as $record) {
+	public static function findActiveRecordInPoolWithSecondaryKey(Model $Model, $key, $value) {
+		if (isset(self::$_pool[$Model->alias])) {
+			foreach (self::$_pool[$Model->alias]['records'] as $record) {
 				if ($record->{$key} == $value) {
 					return $record;
 				}
@@ -64,15 +64,15 @@ abstract class ActiveRecordManager {
 		return false;
 	}
 
-	public static function getActiveRecordProperties(Model $model, &$record) {
+	public static function getActiveRecordProperties(Model $Model, &$record) {
 		$result = false;
-		if (method_exists($model, 'getActiveRecordProperties')) {
-			$result = $model->getActiveRecordProperties($record);
+		if (method_exists($Model, 'getActiveRecordProperties')) {
+			$result = $Model->getActiveRecordProperties($record);
 		}
 
 		if ($result === false) {
-			$name = $model->activeRecordBehaviorSettings('prefix') . $model->name;
-			App::import('Model' . $model->activeRecordBehaviorSettings('subfolder'), $name);
+			$name = $Model->activeRecordBehaviorSettings('prefix') . $Model->name;
+			App::import('Model' . $Model->activeRecordBehaviorSettings('subfolder'), $name);
 			if (!class_exists($name)) {
 				$name = 'ActiveRecord';
 			}
@@ -81,29 +81,29 @@ abstract class ActiveRecordManager {
 		return $result;
 	}
 
-	public static function getActiveRecord(Model $model, array $record) {
+	public static function getActiveRecord(Model $Model, array $record) {
 		if (count($record) == 0) {
 			return null;
-		} else if (isset($record[$model->alias][$model->primaryKey])) {
-			$id = $record[$model->alias][$model->primaryKey];
-		} else if (isset($record[$model->primaryKey])) {
-			$id = $record[$model->primaryKey];
+		} else if (isset($record[$Model->alias][$Model->primaryKey])) {
+			$id = $record[$Model->alias][$Model->primaryKey];
+		} else if (isset($record[$Model->primaryKey])) {
+			$id = $record[$Model->primaryKey];
 		} else {
-			throw new ActiveRecordException('No primary key defined in record for model ' . $model->name);
+			throw new ActiveRecordException('No primary key defined in record for model ' . $Model->name);
 		}
 
-		$result = self::findActiveRecordInPool($model, $id);
+		$result = self::findActiveRecordInPool($Model, $id);
 		if ($result === false) {
-			$properties = self::getActiveRecordProperties($model, $record);
+			$properties = self::getActiveRecordProperties($Model, $record);
 			if (isset($properties['model'])) {
-				$model = $properties['model'];
+				$Model = $properties['model'];
 			}
-			$options = array('model' => $model, 'create' => false);
+			$options = array('model' => $Model, 'create' => false);
 			$result = new $properties['name']($properties['record'], $options);
-			if (!isset(self::$_pool[$model->alias])) {
-				self::$_pool[$model->alias] = array('records' => array(), 'model' => $model, 'sourceName' => $model->useDbConfig);
+			if (!isset(self::$_pool[$Model->alias])) {
+				self::$_pool[$Model->alias] = array('records' => array(), 'model' => $Model, 'sourceName' => $Model->useDbConfig);
 			}
-			self::$_pool[$model->alias]['records'][$id] = $result;
+			self::$_pool[$Model->alias]['records'][$id] = $result;
 		} else {
 			$result->refresh($record);
 		}

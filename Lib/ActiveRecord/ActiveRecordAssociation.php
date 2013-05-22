@@ -15,7 +15,7 @@ class ActiveRecordAssociation {
 	protected $_association; // public part of the association
 	protected $_record; // ActiveRecord that owns this association
 	protected $_type;
-	protected $_model;
+	protected $_Model;
 	protected $_definition;  // definition of the association as defined in cakePHP
 	protected $_associated;  // Array of ActiveRecords associated to the $Record
 	protected $_changed = false;   // Set to true when the association has been modified
@@ -29,7 +29,7 @@ class ActiveRecordAssociation {
 		$this->_record = $Record;
 		$this->_type = $type;
 
-		$this->_model = $Record->getModel()->{$name};
+		$this->_Model = $Record->getModel()->{$name};
 		$this->_definition = $definition;
 		$this->_associated = array();
 
@@ -75,7 +75,11 @@ class ActiveRecordAssociation {
 	}
 
 	public function getModel() {
-		return $this->_model;
+		return $this->_Model;
+	}
+
+	public function getPrimaryKey() {
+		return $this->_Model->primaryKey;
 	}
 
 	public function getName() {
@@ -156,20 +160,20 @@ class ActiveRecordAssociation {
 				if (count($this->_associated) == 1) {
 					$this->_associated[0]->refresh($records);
 				} else {
-					$active_record = ActiveRecordManager::getActiveRecord($this->_model, $records);
+					$active_record = ActiveRecordManager::getActiveRecord($this->_Model, $records);
 					$this->_associated = array($active_record);
 				}
 			} else {
 				$oldRecords = array();
 				foreach ($this->_associated as $Record) {
-					$oldRecords[$Record->{$this->_model->primaryKey}] = $Record;
+					$oldRecords[$Record->{$this->_Model->primaryKey}] = $Record;
 				}
 				$result = array();
 				foreach ($records as $record) {
-					if (array_key_exists($record[$this->_model->primaryKey], $oldRecords)) {
+					if (array_key_exists($record[$this->_Model->primaryKey], $oldRecords)) {
 						$result[] = $Record->refresh($record);
 					} else {
-						$result[] = ActiveRecordManager::getActiveRecord($this->_model, $record);
+						$result[] = ActiveRecordManager::getActiveRecord($this->_Model, $record);
 					}
 				}
 				$this->_associated = $result;
@@ -193,7 +197,7 @@ class ActiveRecordAssociation {
 	}
 
 	protected function _initialize() {
-		$this->_associated = $this->_AssociationStrategy->associatedRecords($this->_record->getRecord(), $this->_record->getModel());
+		$this->_associated = $this->_AssociationStrategy->associatedRecords($this->_record);
 		$this->_changed = false;
 		$this->_initialized = true;
 	}

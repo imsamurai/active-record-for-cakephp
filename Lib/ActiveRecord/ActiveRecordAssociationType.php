@@ -9,6 +9,7 @@
 abstract class ActiveRecordAssociationType {
 
 	protected $_Association = null;
+
 	const TYPE = null;
 
 	protected function __construct(ActiveRecordAssociation $Association) {
@@ -22,7 +23,7 @@ abstract class ActiveRecordAssociationType {
 	 * @return ActiveRecordAssociationType
 	 */
 	public static function create($type, ActiveRecordAssociation $Association) {
-		$className = 'ActiveRecordAssociation'.Inflector::camelize($type);
+		$className = 'ActiveRecordAssociation' . Inflector::camelize($type);
 		App::uses($className, 'ActiveRecord.Lib/ActiveRecord/AssociationType');
 		return new $className($Association);
 	}
@@ -43,94 +44,99 @@ abstract class ActiveRecordAssociationType {
 		return static::TYPE === 'hasAndBelongsToMany';
 	}
 
-	public function setForeignKey(ActiveRecord $active_record = null) {
-		if ($active_record != null) {
-			$foreignKey = $this->_Association->getDefinition('foreignKey');
-			$associated_record = &$active_record->getRecord();
-			$reference_record = $this->_Association->getRecord()->getRecord();
-			if (isset($reference_record[$this->_Association->getRecord()->getModel()->primaryKey])) {
-				if (!empty($associated_record[$foreignKey])) {
-					// The record is associated with another record: find this record, and remove the association
-					$active_record_associated_with_active_record = ActiveRecordManager::findActiveRecordInPool($this->_Association->getRecord()->getModel(), $associated_record[$foreignKey]);
-					if ($active_record_associated_with_active_record) {
-						$assoctiation = $active_record_associated_with_active_record->{$this->_Association->getName()};
-						if ($assoctiation) {
-							$assoctiation->remove($active_record);
-						}
+	public function setForeignKey(ActiveRecord $Record = null) {
+		if (is_null($Record)) {
+			return;
+		}
+		$foreignKey = $this->_Association->getDefinition('foreignKey');
+		$associatedRecord = &$Record->getRecord();
+		$referenceRecord = $this->_Association->getRecord()->getRecord();
+		if (isset($referenceRecord[$this->_Association->getRecord()->getPrimaryKey()])) {
+			if (!empty($associatedRecord[$foreignKey])) {
+				// The record is associated with another record: find this record, and remove the association
+				$AssociatedRecord = ActiveRecordManager::findActiveRecordInPool($this->_Association->getRecord()->getModel(), $associatedRecord[$foreignKey]);
+				if ($AssociatedRecord) {
+					$assoctiation = $AssociatedRecord->{$this->_Association->getName()};
+					if ($assoctiation) {
+						$assoctiation->remove($Record);
 					}
 				}
-				$associated_record[$foreignKey] = $reference_record[$this->_Association->getRecord()->getModel()->primaryKey];
-			} else {
-				$this->_Association->getRecord()->addForeignKey($this->_Association, $active_record);
 			}
-			$active_record->setChanged();
+			$associatedRecord[$foreignKey] = $referenceRecord[$this->_Association->getRecord()->getPrimaryKey()];
+		} else {
+			$this->_Association->getRecord()->addForeignKey($this->_Association, $Record);
+		}
+		$Record->setChanged();
+	}
+
+	public function removeAssociatedRecord(ActiveRecord $Record) {
+		$associatedRecord = &$Record->getRecord();
+		$associatedRecord[$this->_Association->getDefinition('foreignKey')] = null;
+		if ($this->_Association->getDefinition('deleteWhenNotAssociated')) {
+			$Record->delete(true);
+		} else {
+			$Record->setChanged();
 		}
 	}
 
- public function removeAssociatedRecord(ActiveRecord $active_record) {
-		$associated_record = &$active_record->getRecord();
-		$associated_record[$this->_Association->getDefinition('foreignKey')] = null;
-		if ($this->_Association->getDefinition('deleteWhenNotAssociated')) {
-			$active_record->delete(true);
-		} else {
-			$active_record->setChanged();
-		}
-	}
 //
 //	abstract public function getActiveRecords();
 //
 //	abstract public function refresh($records);
 //
 	public function associatedRecordsWithRecords($records) {
-		$associated_records = array();
+		$associatedRecords = array();
 		switch (true) {
 			case $this->isHasOne():
 			case $this->isBelongsTo() : {
 					if ($records instanceof ActiveRecord) {
-						$active_record = $records;
+						$Record = $records;
 					} else {
-						$active_record = ActiveRecordManager::getActiveRecord($this->_Association->getModel(), $records);
+						$Record = ActiveRecordManager::getActiveRecord($this->_Association->getModel(), $records);
 					}
-					$associated_records = array($active_record);
+					$associatedRecords = array($Record);
 					break;
 				}
 			case $this->isHasMany():
 			case $this->isHasAndBelongsToMany(): {
-					$associated_records = array();
+					$associatedRecords = array();
 					foreach ($records as $related_record) {
 						if ($related_record instanceof ActiveRecord) {
-							$active_record = $related_record;
+							$Record = $related_record;
 						} else {
-							$active_record = ActiveRecordManager::getActiveRecord($this->_Association->getModel(), $related_record);
+							$Record = ActiveRecordManager::getActiveRecord($this->_Association->getModel(), $related_record);
 						}
-						$associated_records[] = $active_record;
+						$associatedRecords[] = $Record;
 					}
 					break;
 				}
 		}
 
-		return $associated_records;
+		return $associatedRecords;
 	}
-//
-	public function associatedRecords(array $reference_record, Model $reference_model) {
-		$related_active_records = array();
-		if (isset($reference_record[$reference_model->primaryKey])) {
 
-			if (!$reference_model->Behaviors->attached('Containable')) {
-				$reference_model->Behaviors->load('Containable');
+//
+	public function associatedRecords(ActiveRecord $Record) {
+		$referenceRecord = $Record->getRecord();
+		$referenceModel = $Record->getModel();
+		$relatedRecords = array();
+		if (isset($referenceRecord[$referenceModel->primaryKey])) {
+
+			if (!$referenceModel->Behaviors->attached('Containable')) {
+				$referenceModel->Behaviors->load('Containable');
 			}
 			// We can never be sure that all records are stored in the pool. So we must query them.
-			$result = $reference_model->find('first', array(
-				'conditions' => array($reference_model->alias . '.' . $reference_model->primaryKey => $reference_record[$reference_model->primaryKey]),
+			$result = $referenceModel->find('first', array(
+				'conditions' => array($referenceModel->alias . '.' . $referenceModel->primaryKey => $referenceRecord[$referenceModel->primaryKey]),
 				'contain' => array($this->_Association->getName()),
 				'activeRecord' => false));
-			foreach ($result[$this->_Association->getName()] as $related_record) {
-				$related_active_records[] = ActiveRecordManager::getActiveRecord($this->_Association->getModel(), $related_record);
+			foreach ($result[$this->_Association->getName()] as $relatedRecord) {
+				$relatedRecords[] = ActiveRecordManager::getActiveRecord($this->_Association->getModel(), $relatedRecord);
 			}
 		}
-		return $related_active_records;
+		return $relatedRecords;
 	}
+
 //
 //	abstract public function setAssociatedRecordsWithForeignKeys($activeRecords, $isNew = false);
-
 }

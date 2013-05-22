@@ -14,13 +14,13 @@ class ActiveRecordAssociationBelongsTo extends ActiveRecordAssociationType {
 
 	public function setForeignKey(ActiveRecord $Record = null) {
 		$foreignKey = $this->_Association->getDefinition('foreignKey');
-		$reference_record = &$this->_Association->getRecord()->getRecord();
+		$referenceRecord = &$this->_Association->getRecord()->getRecord();
 		if ($Record == null) {
-			$reference_record[$foreignKey] = '';
+			$referenceRecord[$foreignKey] = '';
 		} else {
-			$associated_record = &$Record->getRecord();
-			if (isset($associated_record[$Record->getModel()->primaryKey])) {
-				$reference_record[$foreignKey] = $associated_record[$Record->getModel()->primaryKey];
+			$associatedRecord = &$Record->getRecord();
+			if (isset($associatedRecord[$Record->getPrimaryKey()])) {
+				$referenceRecord[$foreignKey] = $associatedRecord[$Record->getPrimaryKey()];
 			} else {
 				$Record->addForeignKey($this->_Association, $Record);
 			}
@@ -29,33 +29,33 @@ class ActiveRecordAssociationBelongsTo extends ActiveRecordAssociationType {
 	}
 
 	public function removeAssociatedRecord(ActiveRecord $Record) {
-		$reference_record = &$this->_Association->getRecord()->getRecord();
-		$reference_record[$this->_Association->getDefinition('foreignKey')] = null;
+		$referenceRecord = &$this->_Association->getRecord()->getRecord();
+		$referenceRecord[$this->_Association->getDefinition('foreignKey')] = null;
 		$this->_Association->getRecord()->setChanged();
 	}
 
-	public function associatedRecords(array $reference_record, Model $reference_model) {
-		$related_active_record = null;
+	public function associatedRecords(ActiveRecord $Record) {
+		$referenceRecord = $Record->getRecord();
 		$foreignKey = $this->_Association->getDefinition('foreignKey');
-		if (is_null($reference_record[$foreignKey])) {
-			return array($related_active_record);
+		if (is_null($referenceRecord[$foreignKey])) {
+			return array(null);
 		}
 		// The record has a foreign key, but has not the associated Active Record.
 		// First try to find the Active Record in the pool, if not query it.
-		$related_active_record = ActiveRecordManager::findActiveRecordInPool($this->_Association->getModel(), $reference_record[$foreignKey]);
-		if ($related_active_record === false) {
-			$related_record = $this->_Association->getModel()->find('first', array(
-				'conditions' => array($this->_Association->getModel()->primaryKey => $reference_record[$foreignKey]),
+		$relatedRecord = ActiveRecordManager::findActiveRecordInPool($this->_Association->getModel(), $referenceRecord[$foreignKey]);
+		if ($relatedRecord === false) {
+			$relatedRecord = $this->_Association->getModel()->find('first', array(
+				'conditions' => array($this->_Association->getPrimaryKey() => $referenceRecord[$foreignKey]),
 				'recursive' => -1,
 				'activeRecord' => false));
-			if ($related_record) {
-				$related_active_record = ActiveRecordManager::getActiveRecord($this->_Association->getModel(), $related_record);
+			if ($relatedRecord) {
+				$relatedRecord = ActiveRecordManager::getActiveRecord($this->_Association->getModel(), $relatedRecord);
 			} else {
-				$related_active_record = null;
+				$relatedRecord = null;
 			}
 		}
 
-		return array($related_active_record);
+		return array($relatedRecord);
 	}
 
 }

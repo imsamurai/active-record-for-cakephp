@@ -14,42 +14,42 @@ class ActiveRecordBehavior extends ModelBehavior {
 	);
 	public $runtime = array();
 
-	public function setup(Model $model, $settings = array()) {
-		$this->settings[$model->alias] = $settings + static::$defaultSettings;
+	public function setup(Model $Model, $settings = array()) {
+		$this->settings[$Model->alias] = $settings + static::$defaultSettings;
 	}
 
-	public function activeRecordBehaviorSettings(Model $model, $setting = null) {
+	public function activeRecordBehaviorSettings(Model $Model, $setting = null) {
 		if ($setting) {
-			return $this->settings[$model->alias][$setting];
+			return $this->settings[$Model->alias][$setting];
 		}
-		return $this->settings[$model->alias];
+		return $this->settings[$Model->alias];
 	}
 
-	public function beforeFind(Model $model, $query) {
-		$this->runtime[$model->alias]['activeRecord'] = false;
+	public function beforeFind(Model $Model, $query) {
+		$this->runtime[$Model->alias]['activeRecord'] = false;
 
 		if ((isset($query['activeRecord']) && $query['activeRecord'] == true) ||
-				(!isset($query['activeRecord']) && $this->settings[$model->alias]['allFind'])) {
-			if ($model->findQueryType == 'first' || $model->findQueryType == 'all') {
-				$this->runtime[$model->alias]['activeRecord'] = true;
+				(!isset($query['activeRecord']) && $this->settings[$Model->alias]['allFind'])) {
+			if ($Model->findQueryType == 'first' || $Model->findQueryType == 'all') {
+				$this->runtime[$Model->alias]['activeRecord'] = true;
 			}
 		}
 	}
 
-	public function afterFind(Model $model, $results, $primary) {
+	public function afterFind(Model $Model, $results, $primary) {
 		$records = $results;
-		if ($this->runtime[$model->alias]['activeRecord']) {
-			if ($model->findQueryType == 'first') {
+		if ($this->runtime[$Model->alias]['activeRecord']) {
+			if ($Model->findQueryType == 'first') {
 				// The afterFind callback is called before that the find method refines the result to 1 row.
 				if (count($results) > 0) {
-					$records = array(ActiveRecordManager::getActiveRecord($model, $results[0]));
+					$records = array(ActiveRecordManager::getActiveRecord($Model, $results[0]));
 				} else {
 					$records = array();
 				}
-			} else if ($model->findQueryType == 'all') {
+			} else if ($Model->findQueryType == 'all') {
 				$records = array();
 				foreach ($results as $result) {
-					$records[] = ActiveRecordManager::getActiveRecord($model, $result);
+					$records[] = ActiveRecordManager::getActiveRecord($Model, $result);
 				}
 			}
 		}
