@@ -101,12 +101,12 @@ class ActiveRecordAssociation {
 		$this->_AssociationStrategy->setForeignKey($Record);
 	}
 
-	public function addAssociatedRecord(ActiveRecord $active_record) {
-		$this->setForeignKey($active_record);
+	public function addAssociatedRecord(ActiveRecord $Record) {
+		$this->setForeignKey($Record);
 		if ($this->isBelongsTo() || $this->isHasOne()) {
-			$this->_associated = array($active_record);
+			$this->_associated = array($Record);
 		} else {
-			$this->_associated[] = $active_record;
+			$this->_associated[] = $Record;
 		}
 		$this->_changed = true;
 	}
@@ -144,7 +144,7 @@ class ActiveRecordAssociation {
 		}
 
 		if ($this->isBelongsTo() || $this->isHasOne()) {
-			if (count($this->_associated) == 0) {
+			if (count($this->_associated) === 0) {
 				return null;
 			} else {
 				return $this->_associated[0]; // Give the Active Record
@@ -157,11 +157,10 @@ class ActiveRecordAssociation {
 	public function refresh($records) {
 		if ($this->_initialized) {
 			if ($this->isBelongsTo() || $this->isHasOne()) {
-				if (count($this->_associated) == 1) {
+				if (count($this->_associated) === 1) {
 					$this->_associated[0]->refresh($records);
 				} else {
-					$active_record = ActiveRecordManager::getActiveRecord($this->_Model, $records);
-					$this->_associated = array($active_record);
+					$this->_associated = array(ActiveRecordManager::getActiveRecord($this->_Model, $records));
 				}
 			} else {
 				$oldRecords = array();
@@ -213,13 +212,13 @@ class ActiveRecordAssociation {
 			if (count($activeRecords) > 1) {
 				throw new ActiveRecordException('Too many records for a ' . $this->_type . ' association (name: ' . $this->_name . ')');
 			}
-			$RecordNew = (count($activeRecords) == 1) ? $activeRecords[0] : null;
-			$RecordOld = (count($this->_associated) == 1) ? $this->_associated[0] : null;
+			$RecordNew = (count($activeRecords) === 1) ? $activeRecords[0] : null;
+			$RecordOld = (count($this->_associated) === 1) ? $this->_associated[0] : null;
 			if ($RecordOld && $RecordNew) {
 				$this->replaceAssociatedRecord($RecordOld, $RecordNew);
-			} else if ($RecordOld == null && $RecordNew) {
+			} else if ($RecordOld === null && $RecordNew) {
 				$this->addAssociatedRecord($RecordNew);
-			} else if ($RecordOld && $RecordNew == null) {
+			} else if ($RecordOld && $RecordNew === null) {
 				$this->removeAssociatedRecord($RecordOld);
 			}
 		} else {
