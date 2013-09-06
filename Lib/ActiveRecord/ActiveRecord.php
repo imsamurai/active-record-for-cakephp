@@ -45,6 +45,10 @@ class ActiveRecord {
 		} else {
 			$this->_Record = $record;
 		}
+
+		$schema = $this->_Model->schema();
+		$this->_Record += array_combine(array_keys($schema), Hash::extract($schema, '{s}.default'));
+
 		$this->_directDelete = $this->_Model->activeRecordBehaviorSettings('directDelete');
 		if (isset($options['directDelete'])) {
 			$this->_directDelete = $options['directDelete'];
