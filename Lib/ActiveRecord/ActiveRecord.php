@@ -246,6 +246,36 @@ class ActiveRecord {
 		}
 
 		$record = array($this->_Model->alias => $this->_Record);
+		$this->_saveHasMany();
+		$this->_saveHasAndBelongsToMany($record);
+
+		if (!$this->_changed) {
+			return true;
+		}
+
+		if ($result = $this->_Model->save($record)) {
+			$this->_Record = $result[$this->_Model->alias];
+			$this->_resetState();
+			return true;
+		} else {
+			CakeLog::write('ActiverRecord', 'save did nod succeed for record ' . print_r($record, true) . ' with model ' . $this->_Model->alias .
+					'. Error: ' . print_r($this->_Model->validationErrors, true));
+			return false;
+		}
+	}
+
+	protected function _saveHasMany() {
+		foreach ($this->_associations as $Association) {
+			if (!($Association->isChanged() && $Association->isHasMany())) {
+				continue;
+			}
+			foreach ($Association->getActiveRecords() as $Record) {
+				$Record->save();
+			}
+		}
+	}
+
+	protected function _saveHasAndBelongsToMany(&$record) {
 		foreach ($this->_associations as $association) {
 			if ($association->isChanged() && $association->isHasAndBelongsToMany()) {
 				$this->_changed = true;
@@ -271,20 +301,6 @@ class ActiveRecord {
 				}
 				$association->setChanged(false);
 			}
-		}
-
-		if (!$this->_changed) {
-			return true;
-		}
-
-		if ($result = $this->_Model->save($record)) {
-			$this->_Record = $result[$this->_Model->alias];
-			$this->_resetState();
-			return true;
-		} else {
-			CakeLog::write('ActiverRecord', 'save did nod succeed for record ' . print_r($record, true) . ' with model ' . $this->_Model->alias .
-					'. Error: ' . print_r($this->_Model->validationErrors, true));
-			return false;
 		}
 	}
 
