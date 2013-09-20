@@ -50,4 +50,19 @@ class AssociationsTest extends CakeTestCase {
 		$this->assertCount(2, $ARTPostData['Comments']);
 	}
 
+	public function testBelongsTo() {
+		$ARTComment = new ARTComment(array('message' => 'coment1 lala1'));
+		$ARTComment->Post = new ARTPost(array('title' => 'lala', 'message' => '', 'writer_id' => 1));
+
+		$ARTComment->save();
+		$ARTCommentData = $this->TComment->find('first', array(
+			'conditions' => array(
+				'TComment.id' => $ARTComment->id
+			)
+		));
+
+		debug($ARTCommentData);
+		$this->assertNotNull($ARTComment->Post);
+	}
+
 }

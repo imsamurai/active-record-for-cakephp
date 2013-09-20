@@ -241,11 +241,14 @@ class ActiveRecord {
 			return $this->_delete();
 		}
 
+		$this->_saveBelongsTo();
+
 		if ($this->_created) {
 			$this->_create(); // This reset the _changed property
 		}
 
 		$record = array($this->_Model->alias => $this->_Record);
+
 		$this->_saveHasMany();
 		$this->_saveHasAndBelongsToMany($record);
 
@@ -261,6 +264,18 @@ class ActiveRecord {
 			CakeLog::write('ActiverRecord', 'save did nod succeed for record ' . print_r($record, true) . ' with model ' . $this->_Model->alias .
 					'. Error: ' . print_r($this->_Model->validationErrors, true));
 			return false;
+		}
+	}
+
+	protected function _saveBelongsTo() {
+		foreach ($this->_associations as $Association) {
+			if (!($Association->isChanged() && $Association->isBelongsTo())) {
+				continue;
+			}
+			$Record = $Association->getActiveRecords();
+			if ($Record) {
+				$Record->save();
+			}
 		}
 	}
 
