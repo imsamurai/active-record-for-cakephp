@@ -21,9 +21,8 @@ class ActiveRecordAssociationBelongsTo extends ActiveRecordAssociationType {
 			$associatedRecord = &$Record->getRecord();
 			if (isset($associatedRecord[$Record->getPrimaryKey()])) {
 				$referenceRecord[$foreignKey] = $associatedRecord[$Record->getPrimaryKey()];
-			} else {
-				$Record->addForeignKey($this->_Association, $Record);
 			}
+			$Record->addForeignKey($this->_Association, $Record);
 		}
 		$this->_Association->getRecord()->setChanged();
 	}

@@ -63,9 +63,8 @@ abstract class ActiveRecordAssociationType {
 				}
 			}
 			$associatedRecord[$foreignKey] = $referenceRecord[$this->_Association->getRecord()->getPrimaryKey()];
-		} else {
-			$this->_Association->getRecord()->addForeignKey($this->_Association, $Record);
 		}
+		$this->_Association->getRecord()->addForeignKey($this->_Association, $Record);
 		$Record->setChanged();
 	}
 
