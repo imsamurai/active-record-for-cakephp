@@ -129,6 +129,9 @@ abstract class ActiveRecordAssociationType {
 				'conditions' => array($referenceModel->alias . '.' . $referenceModel->primaryKey => $referenceRecord[$referenceModel->primaryKey]),
 				'contain' => array($this->_Association->getName()),
 				'activeRecord' => false));
+			if (!$result) {
+				return $relatedRecords;
+			}
 			foreach ($result[$this->_Association->getName()] as $relatedRecord) {
 				$relatedRecords[] = ActiveRecordManager::getActiveRecord($this->_Association->getModel(), $relatedRecord);
 			}
