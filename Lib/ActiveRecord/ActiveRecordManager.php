@@ -94,7 +94,7 @@ abstract class ActiveRecordManager {
 
 		$result = self::findActiveRecordInPool($Model, $id);
 		if ($result === false) {
-			$result = self::createActiveRecord($Model, $record);
+			$result = self::createActiveRecord($Model, $record, array('create' => false));
 			if (!isset(self::$_pool[$Model->alias])) {
 				self::$_pool[$Model->alias] = array('records' => array(), 'model' => $Model, 'sourceName' => $Model->useDbConfig);
 			}
@@ -118,7 +118,7 @@ abstract class ActiveRecordManager {
 		if (isset($properties['model'])) {
 			$Model = $properties['model'];
 		}
-		$options = (array)$options + array('model' => $Model, 'create' => false);
+		$options = (array)$options + array('model' => $Model);
 		return new $properties['name']($properties['record'], $options);
 	}
 
