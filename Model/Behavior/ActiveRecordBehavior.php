@@ -56,5 +56,17 @@ class ActiveRecordBehavior extends ModelBehavior {
 		return $records;
 	}
 
+	/**
+	 * Create proper ActiveRecord object for given arguments
+	 *
+	 * @param Model $Model
+	 * @param array $record
+	 * @param array $options
+	 * @return ActiveRecord
+	 */
+	public function createActiveRecord(Model $Model, array $record, array $options = null) {
+		return ActiveRecordManager::createActiveRecord($Model, $record, $options);
+	}
+
 }
 

@@ -94,12 +94,7 @@ abstract class ActiveRecordManager {
 
 		$result = self::findActiveRecordInPool($Model, $id);
 		if ($result === false) {
-			$properties = self::getActiveRecordProperties($Model, $record);
-			if (isset($properties['model'])) {
-				$Model = $properties['model'];
-			}
-			$options = array('model' => $Model, 'create' => false);
-			$result = new $properties['name']($properties['record'], $options);
+			$result = self::createActiveRecord($Model, $record);
 			if (!isset(self::$_pool[$Model->alias])) {
 				self::$_pool[$Model->alias] = array('records' => array(), 'model' => $Model, 'sourceName' => $Model->useDbConfig);
 			}
@@ -108,6 +103,23 @@ abstract class ActiveRecordManager {
 			$result->refresh($record);
 		}
 		return $result;
+	}
+
+	/**
+	 * Create proper ActiveRecord object for given arguments
+	 *
+	 * @param Model $Model
+	 * @param array $record
+	 * @param array $options
+	 * @return ActiveRecord
+	 */
+	public static function createActiveRecord(Model $Model, array $record, array $options = null) {
+		$properties = self::getActiveRecordProperties($Model, $record);
+		if (isset($properties['model'])) {
+			$Model = $properties['model'];
+		}
+		$options = (array)$options + array('model' => $Model, 'create' => false);
+		return new $properties['name']($properties['record'], $options);
 	}
 
 	public static function saveAll() {
