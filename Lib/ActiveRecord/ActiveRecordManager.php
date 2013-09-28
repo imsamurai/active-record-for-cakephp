@@ -72,7 +72,7 @@ abstract class ActiveRecordManager {
 
 		if ($result === false) {
 			$name = $Model->activeRecordBehaviorSettings('prefix') . $Model->name;
-			App::import('Model' . $Model->activeRecordBehaviorSettings('subfolder'), $name);
+			App::uses($name, 'Model' . $Model->activeRecordBehaviorSettings('subfolder'));
 			if (!class_exists($name)) {
 				$name = 'ActiveRecord';
 			}
