@@ -72,7 +72,8 @@ abstract class ActiveRecordManager {
 
 		if ($result === false) {
 			$name = $Model->activeRecordBehaviorSettings('prefix') . $Model->name;
-			App::uses($name, 'Model' . $Model->activeRecordBehaviorSettings('subfolder'));
+			list($plugin, $path) = pluginSplit($Model->activeRecordBehaviorSettings('subfolder'), true);
+			App::uses($name, $plugin . 'Model' . DS . str_replace(array('/', '\\'), DS, $path));
 			if (!class_exists($name)) {
 				$name = 'ActiveRecord';
 			}
@@ -118,7 +119,7 @@ abstract class ActiveRecordManager {
 		if (isset($properties['model'])) {
 			$Model = $properties['model'];
 		}
-		$options = (array)$options + array('model' => $Model);
+		$options = (array) $options + array('model' => $Model);
 		return new $properties['name']($properties['record'], $options);
 	}
 

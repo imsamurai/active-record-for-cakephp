@@ -51,11 +51,11 @@ In order for the developer to clearly see the difference beween the 2 kinds of a
 Extend ActiveRecord class
 -------------------------
 Per default, the object you retrieve is of the class ActiveRecord. But you can of course extend this class for one model.
-Per default, the behavior will look for a class in the subfolder Model\ActiveRecord with name 'AR<model name>', e.g.: ARPost or ARComment (the prefix 'AR' and the subfolder name can be changed in the bahavior constructor options).
+Per default, the behavior will look for a class in the subfolder Model/ActiveRecord with name 'AR<model name>', e.g.: ARPost or ARComment (the prefix 'AR' and the subfolder name can be changed in the bahavior constructor options).
 In the file ARPost.php:
 
     <?php
-    App::import('Model\Behavior', 'ActiveRecord');
+    App::import('Model'.DS.'Behavior', 'ActiveRecord');
 
     class ARTPost extends ActiveRecord {
         public $var;
@@ -132,7 +132,7 @@ Then in the Action model, I have added this function:
       $type = $record[$this->alias]['type'];
       $name = 'AR' . $type . 'Action';
       $model = $this;
-      App::import('Model\ActiveRecord', $name);
+      App::import('Model'.DS.'ActiveRecord', $name);
       return array('name' => $name, 'Record' => $record, 'Model' => $model);
     }
 

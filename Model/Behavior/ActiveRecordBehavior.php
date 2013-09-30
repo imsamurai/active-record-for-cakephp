@@ -10,7 +10,7 @@ class ActiveRecordBehavior extends ModelBehavior {
 		'allFind' => true,
 			'directDelete' => false,
 			'prefix' => 'AR',
-			'subfolder' => '\\ActiveRecord'
+			'subfolder' => 'ActiveRecord'
 	);
 	public $runtime = array();
 
