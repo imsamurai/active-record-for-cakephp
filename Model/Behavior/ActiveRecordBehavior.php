@@ -68,5 +68,17 @@ class ActiveRecordBehavior extends ModelBehavior {
 		return ActiveRecordManager::createActiveRecord($Model, $record, $options);
 	}
 
+	/**
+	 * Find records and returns active record objects
+	 *
+	 * @param Model $Model
+	 * @param string $type
+	 * @param array $query
+	 * @return mixed List/single of active record(s)
+	 */
+	public function arFind(Model $Model, $type = 'first', array $query = array()) {
+		return $Model->find($type, array('activeRecord' => true) + $query);
+	}
+
 }
 
