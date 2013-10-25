@@ -179,6 +179,8 @@ class ActiveRecord {
 		if ($from_association) {
 			$this->_removedFromAssociation = true;
 		}
+		
+		return $this;
 	}
 
 	public function undo() {
@@ -194,6 +196,8 @@ class ActiveRecord {
 		}
 
 		$this->_resetState();
+
+		return $this;
 	}
 
 	//strange thing!
