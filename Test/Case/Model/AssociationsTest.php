@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once dirname(__FILE__) . DS . 'models.php';
 require_once dirname(__FILE__) . DS . 'active_records.php';
