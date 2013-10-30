@@ -17,6 +17,16 @@ class ActiveRecordAssociationCollection implements IteratorAggregate, Countable,
       $result = new ArrayObject($this->_Association->getAssociated());
       return $result->getIterator();
    }
+   
+   /**
+    * Creates and fill object by given name
+    * 
+    * @param string $className
+    * @return mixed
+    */
+   public function getAs($className) {
+	   return new $className($this->_Association->getAssociated());
+   }
 
    public function count() {
       return count($this->_Association->getAssociated());
