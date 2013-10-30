@@ -36,7 +36,7 @@ class ActiveRecordBehavior extends ModelBehavior {
 		}
 	}
 
-	public function afterFind(Model $Model, $results, $primary) {
+	public function afterFind(Model $Model, $results, $primary = false) {
 		$records = $results;
 		if ($this->runtime[$Model->alias]['activeRecord']) {
 			if ($Model->findQueryType == 'first') {
