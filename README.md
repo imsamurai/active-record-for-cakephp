@@ -1,4 +1,4 @@
-Active Record for CakePHP
+Active Record for CakePHP [![Build Status](https://travis-ci.org/imsamurai/Active-Record-for-CakePHP.png)](https://travis-ci.org/imsamurai/Active-Record-for-CakePHP)
 =========================
 
 Installation
