@@ -74,14 +74,15 @@ class AssociationsTest extends CakeTestCase {
 	 * @dataProvider serializeProvider
 	 */
 	public function testSerialize($message, $post, $message_key, $post_key) {
+		ActiveRecordManager::clearPool();
 		$ARTComment = new ARTComment($message);
 		$ARTPost = new ARTPost($post);
 
 		$post = json_encode($ARTPost);
 		$message = json_encode($ARTComment);
 
-		$post = json_decode($post, 1);
-		$message = json_decode($message, 1);
+		$post = json_decode($post, true);
+		$message = json_decode($message, true);
 
 		$this->assertArrayHasKey($message_key, $message);
 		$this->assertArrayHasKey($post_key, $post);
