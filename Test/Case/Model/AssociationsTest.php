@@ -65,4 +65,36 @@ class AssociationsTest extends CakeTestCase {
 		$this->assertNotNull($ARTComment->Post);
 	}
 
+	/**
+	 * Test json Serialize
+	 *
+	 * @param array $array
+	 * @param string $result
+	 *
+	 * @dataProvider serializeProvider
+	 */
+	public function testSerialize($message, $post, $message_key, $post_key) {
+		$ARTComment = new ARTComment($message);
+		$ARTPost = new ARTPost($post);
+
+		$post = json_encode($ARTPost);
+		$message = json_encode($ARTComment);
+
+		$post = json_decode($post, 1);
+		$message = json_decode($message, 1);
+
+		$this->assertArrayHasKey($message_key, $message);
+		$this->assertArrayHasKey($post_key, $post);
+
+	}
+	/**
+	 * data provider for testSerialize
+	 *
+	 * @return array
+	 */
+	public static function serializeProvider() {
+		$data = array();
+		$data[] = array(array('message' => 'just json test'), array('title' => 'json test', 'message' => '', 'writer_id' => 1), 'message', 'title');
+		return $data;
+	}
 }

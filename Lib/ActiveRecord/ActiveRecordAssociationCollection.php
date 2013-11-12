@@ -6,7 +6,7 @@
  * Time: 1:11:23
  *
  */
-class ActiveRecordAssociationCollection implements IteratorAggregate, Countable, ArrayAccess {
+class ActiveRecordAssociationCollection implements IteratorAggregate, Countable, ArrayAccess, JsonSerializable {
    private $_Association;  // private part of the association
 
    public function __construct(ActiveRecordAssociation $association) {
@@ -72,5 +72,9 @@ class ActiveRecordAssociationCollection implements IteratorAggregate, Countable,
 
    public function replace($old_record, $new_record) {
       $this->_Association->replaceAssociatedRecord($old_record, $new_record);
+   }
+
+   public function jsonSerialize() {
+      return $this->_Association->getAssociated();
    }
 }

@@ -9,7 +9,7 @@
 App::uses('ActiveRecordManager', 'ActiveRecord.Lib/ActiveRecord');
 App::uses('ActiveRecordAssociation', 'ActiveRecord.Lib/ActiveRecord');
 
-class ActiveRecord {
+class ActiveRecord implements JsonSerializable{
 
 	private $_Model;
 	private $_Record = array();
@@ -269,6 +269,10 @@ class ActiveRecord {
 					'. Error: ' . print_r($this->_Model->validationErrors, true));
 			return false;
 		}
+	}
+
+	public function jsonSerialize() {
+		return $this->_Record;
 	}
 
 	protected function _saveBelongsTo() {
