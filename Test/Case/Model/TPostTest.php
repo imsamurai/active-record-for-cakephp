@@ -29,6 +29,7 @@ class TPostTestCase extends CakeTestCase {
  */
 	public function setUp() {
 		parent::setUp();
+      ActiveRecordManager::clearPool();
 		$this->TPost = ClassRegistry::init('TPost');
 		$this->TComment = ClassRegistry::init('TComment');
 		$this->TWriter = ClassRegistry::init('TWriter');
@@ -745,6 +746,7 @@ class TPostTestCase extends CakeTestCase {
  */
 	public function tearDown() {
 		unset($this->TPost);
+      ActiveRecordManager::clearPool();
 
 		parent::tearDown();
 	}
