@@ -94,7 +94,7 @@ class AssociationsTest extends CakeTestCase {
 	 */
 	public static function serializeProvider() {
 		$data = array();
-		$data[] = array(array('message' => 'just json test'), array('title' => 'json test', 'message' => '', 'writer_id' => 1), 'message', 'title');
+		$data[] = array(array('message' => 'just json test', 'post_id' => 1), array('title' => 'json test', 'message' => '', 'writer_id' => 1), 'message', 'title');
 		return $data;
 	}
 }
