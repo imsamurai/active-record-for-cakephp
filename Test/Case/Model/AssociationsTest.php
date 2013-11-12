@@ -30,9 +30,15 @@ class AssociationsTest extends CakeTestCase {
 
 	public function setUp() {
 		parent::setUp();
+		ActiveRecordManager::clearPool();
 		$this->TPost = ClassRegistry::init('TPost');
 		$this->TComment = ClassRegistry::init('TComment');
 		$this->TWriter = ClassRegistry::init('TWriter');
+	}
+
+	public function tearDown() {
+		ActiveRecordManager::clearPool();
+		parent::tearDown();
 	}
 
 	public function testHasMany() {
@@ -74,7 +80,6 @@ class AssociationsTest extends CakeTestCase {
 	 * @dataProvider serializeProvider
 	 */
 	public function testSerialize($message, $post, $message_key, $post_key) {
-		ActiveRecordManager::clearPool();
 		$ARTComment = new ARTComment($message);
 		$ARTPost = new ARTPost($post);
 
