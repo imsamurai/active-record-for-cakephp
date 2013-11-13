@@ -28,6 +28,7 @@ class TWriterTestCase extends CakeTestCase {
  */
 	public function setUp() {
 		parent::setUp();
+		ActiveRecordManager::clearPool();
 		$this->TWriter = ClassRegistry::init('TWriter');
 	}
 
@@ -273,6 +274,7 @@ class TWriterTestCase extends CakeTestCase {
  */
 	public function tearDown() {
 		unset($this->TWriter);
+		ActiveRecordManager::clearPool();
 
 		parent::tearDown();
 	}
