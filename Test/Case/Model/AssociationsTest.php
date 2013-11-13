@@ -36,11 +36,6 @@ class AssociationsTest extends CakeTestCase {
 		$this->TWriter = ClassRegistry::init('TWriter');
 	}
 
-	public function tearDown() {
-		ActiveRecordManager::clearPool();
-		parent::tearDown();
-	}
-
 	public function testHasMany() {
 		$ARTPost = new ARTPost(array('title' => 'lala', 'message' => '', 'writer_id' => 1));
 		$ARTPost->Comments[] = new ARTComment(array('message' => 'coment1 lala1'));
@@ -91,8 +86,8 @@ class AssociationsTest extends CakeTestCase {
 
 		$this->assertArrayHasKey($message_key, $message);
 		$this->assertArrayHasKey($post_key, $post);
-
 	}
+
 	/**
 	 * data provider for testSerialize
 	 *
@@ -103,4 +98,5 @@ class AssociationsTest extends CakeTestCase {
 		$data[] = array(array('message' => 'just json test', 'post_id' => 1), array('title' => 'json test', 'message' => '', 'writer_id' => 1), 'message', 'title');
 		return $data;
 	}
+
 }

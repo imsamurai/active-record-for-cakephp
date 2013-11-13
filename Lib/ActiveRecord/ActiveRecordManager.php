@@ -42,7 +42,8 @@ abstract class ActiveRecordManager {
 	}
 
 	public static function clearPool() {
-		self::$_pool = array();
+		static::$_pool = array();
+		static::undoAll();
 	}
 
 	public static function findActiveRecordInPool(Model $Model, $id) {
