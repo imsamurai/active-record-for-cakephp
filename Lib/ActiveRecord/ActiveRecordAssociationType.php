@@ -50,20 +50,12 @@ abstract class ActiveRecordAssociationType {
 		}
 		$foreignKey = $this->_Association->getDefinition('foreignKey');
 		$associatedRecord = &$Record->getRecord();
-		$referenceRecord = $this->_Association->getRecord()->getRecord();
-		if (isset($referenceRecord[$this->_Association->getRecord()->getPrimaryKey()])) {
-			if (!empty($associatedRecord[$foreignKey])) {
-				// The record is associated with another record: find this record, and remove the association
-				$AssociatedRecord = ActiveRecordManager::findActiveRecordInPool($this->_Association->getRecord()->getModel(), $associatedRecord[$foreignKey]);
-				if ($AssociatedRecord) {
-					$assoctiation = $AssociatedRecord->{$this->_Association->getName()};
-					if ($assoctiation) {
-						$assoctiation->remove($Record);
-					}
-				}
-			}
-			$associatedRecord[$foreignKey] = $referenceRecord[$this->_Association->getRecord()->getPrimaryKey()];
-		}
+		$ReferenceRecord = $this->_Association->getRecord();
+		
+		$this->_removeOldAssociation($Record, $ReferenceRecord, $foreignKey);
+		
+		$associatedRecord[$foreignKey] = $ReferenceRecord->getRecord()[$this->_Association->getRecord()->getPrimaryKey()];
+	
 		$this->_Association->getRecord()->addForeignKey($this->_Association, $Record);
 		$Record->setChanged();
 	}
@@ -78,11 +70,6 @@ abstract class ActiveRecordAssociationType {
 		}
 	}
 
-//
-//	abstract public function getActiveRecords();
-//
-//	abstract public function refresh($records);
-//
 	public function associatedRecordsWithRecords($records) {
 		$associatedRecords = array();
 		switch (true) {
@@ -114,7 +101,6 @@ abstract class ActiveRecordAssociationType {
 		return $associatedRecords;
 	}
 
-//
 	public function associatedRecords(ActiveRecord $Record) {
 		$referenceRecord = $Record->getRecord();
 		$referenceModel = $Record->getModel();
@@ -139,6 +125,31 @@ abstract class ActiveRecordAssociationType {
 		return $relatedRecords;
 	}
 
-//
-//	abstract public function setAssociatedRecordsWithForeignKeys($activeRecords, $isNew = false);
+	/**
+	 * if the record is associated with another record and this record 
+	 * not the same as referenced record: find this record, and remove the association
+	 * 
+	 * @see AssociationsTest::testCrossAssociation
+	 * 
+	 * @param ActiveRecord $Record
+	 * @param ActiveRecord $ReferenceRecord
+	 * @param string $foreignKey
+	 * @return void
+	 */
+	protected function _removeOldAssociation(ActiveRecord $Record, ActiveRecord $ReferenceRecord, $foreignKey) {
+		$foreignKeyValue = $Record->getRecord()[$foreignKey];
+		if (empty($foreignKeyValue)) {
+			return;
+		}
+		
+		$AssociatedRecord = ActiveRecordManager::findActiveRecordInPool($this->_Association->getRecord()->getModel(), $foreignKeyValue);
+		if (!$AssociatedRecord || ($ReferenceRecord === $AssociatedRecord)) {
+			return;
+		}
+		$assoctiation = $AssociatedRecord->{$this->_Association->getName()};
+		if ($assoctiation) {
+			$assoctiation->remove($Record);
+		}
+	}
+
 }

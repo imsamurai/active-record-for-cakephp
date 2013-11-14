@@ -98,5 +98,22 @@ class AssociationsTest extends CakeTestCase {
 		$data[] = array(array('message' => 'just json test', 'post_id' => 1), array('title' => 'json test', 'message' => '', 'writer_id' => 1), 'message', 'title');
 		return $data;
 	}
+	
+	/**
+	 * Test save when first record is associated with second record 
+	 * and second associated with first
+	 */
+	public function testCrossAssociation() {
+		$ARTPost = new ARTPost(array('title' => 'lala', 'message' => '', 'writer_id' => 1));
+		$ARTComment = new ARTComment(array('message' => 'coment1 lala1'));
+		$ARTComment->Post = $ARTPost;
+		$ARTPost->Comments[] = $ARTComment;
+		$ARTPost->save();
+		$this->assertCount(1, $ARTPost->Comments);
+		
+		$ARTPost->id = 666;
+		$ARTPost->save();
+		$this->assertCount(1, $ARTPost->Comments);
+	}
 
 }
