@@ -11,6 +11,7 @@ App::uses('ActiveRecordAssociation', 'ActiveRecord.Lib/ActiveRecord');
 
 class ActiveRecord implements JsonSerializable{
 
+	private $_model_name;
 	private $_Model;
 	private $_Record = array();
 	private $_originalRecord = array();
@@ -26,8 +27,8 @@ class ActiveRecord implements JsonSerializable{
 		if (isset($options['model'])) {
 			$this->_Model = $options['model'];
 		} else {
-			if (property_exists($this, 'model_name')) {
-				$modelName = $this->model_name;
+			if (!empty($this->_model_name)) {
+				$modelName = $this->_model_name;
 			} else {
 				$class_name = get_class($this);
 				$prefix = ActiveRecordBehavior::$defaultSettings['prefix'];
@@ -37,6 +38,7 @@ class ActiveRecord implements JsonSerializable{
 					$modelName = $class_name;
 				}
 			}
+			$this->_model_name = $modelName;
 			App::import('Model', $modelName);
 			$this->_Model = ClassRegistry::init($modelName);
 		}
