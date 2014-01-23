@@ -7,74 +7,76 @@
  *
  */
 class ActiveRecordAssociationCollection implements IteratorAggregate, Countable, ArrayAccess, JsonSerializable {
-   private $_Association;  // private part of the association
 
-   public function __construct(ActiveRecordAssociation $association) {
-      $this->_Association = $association;
-   }
+	protected $_Association; // private part of the association
 
-   public function getIterator() {
-      $result = new ArrayObject($this->_Association->getAssociated());
-      return $result->getIterator();
-   }
-   
-   /**
-    * Creates and fill object by given name
-    * 
-    * @param string $className
-    * @return mixed
-    */
-   public function getAs($className) {
-	   return new $className($this->_Association->getAssociated());
-   }
+	public function __construct(ActiveRecordAssociation $association) {
+		$this->_Association = $association;
+	}
 
-   public function count() {
-      return count($this->_Association->getAssociated());
-   }
+	public function getIterator() {
+		$result = new ArrayObject($this->_Association->getAssociated());
+		return $result->getIterator();
+	}
 
-   public function offsetSet($offset, $value) {
-      if (is_null($offset)) {
-         $this->add($value);
-      } else {
-         if (isset($this->_Association->getAssociated()[$offset])) {
-            $this->replace($this->_Association->getAssociated()[$offset], $value);
-         } else {
-            $this->add($value);
-         }
-      }
-   }
+	/**
+	 * Creates and fill object by given name
+	 * 
+	 * @param string $className
+	 * @return mixed
+	 */
+	public function getAs($className) {
+		return new $className($this->_Association->getAssociated());
+	}
 
-   public function offsetExists($offset) {
-      return isset($this->_Association->getAssociated()[$offset]);
-   }
+	public function count() {
+		return count($this->_Association->getAssociated());
+	}
 
-   public function offsetUnset($offset) {
-      if (isset($this->_Association->getAssociated()[$offset])) {
-         $this->remove($this->_Association->getAssociated()[$offset]);
-      }
-   }
+	public function offsetSet($offset, $value) {
+		if (is_null($offset)) {
+			$this->add($value);
+		} else {
+			if (isset($this->_Association->getAssociated()[$offset])) {
+				$this->replace($this->_Association->getAssociated()[$offset], $value);
+			} else {
+				$this->add($value);
+			}
+		}
+	}
 
-   public function offsetGet($offset) {
-      return isset($this->_Association->getAssociated()[$offset]) ? $this->_Association->getAssociated()[$offset] : null;
-   }
+	public function offsetExists($offset) {
+		return isset($this->_Association->getAssociated()[$offset]);
+	}
 
-   public function add(ActiveRecord $active_record = null) {
-      if ($active_record == null) {
-         return;
-      }
+	public function offsetUnset($offset) {
+		if (isset($this->_Association->getAssociated()[$offset])) {
+			$this->remove($this->_Association->getAssociated()[$offset]);
+		}
+	}
 
-      $this->_Association->addAssociatedRecord($active_record);
-   }
+	public function offsetGet($offset) {
+		return isset($this->_Association->getAssociated()[$offset]) ? $this->_Association->getAssociated()[$offset] : null;
+	}
 
-   public function remove(ActiveRecord $active_record = null) {
-      $this->_Association->removeAssociatedRecord($active_record);
-   }
+	public function add(ActiveRecord $ActiveRecord = null) {
+		if ($ActiveRecord == null) {
+			return;
+		}
 
-   public function replace($old_record, $new_record) {
-      $this->_Association->replaceAssociatedRecord($old_record, $new_record);
-   }
+		$this->_Association->addAssociatedRecord($ActiveRecord);
+	}
 
-   public function jsonSerialize() {
-      return $this->_Association->getAssociated();
-   }
+	public function remove(ActiveRecord $ActiveRecord = null) {
+		$this->_Association->removeAssociatedRecord($ActiveRecord);
+	}
+
+	public function replace($ActiveRecordOld, $ActiveRecordNew) {
+		$this->_Association->replaceAssociatedRecord($ActiveRecordOld, $ActiveRecordNew);
+	}
+
+	public function jsonSerialize() {
+		return $this->_Association->getAssociated();
+	}
+
 }

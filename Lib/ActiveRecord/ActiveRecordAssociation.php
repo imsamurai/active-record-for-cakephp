@@ -11,15 +11,69 @@ App::uses('ActiveRecordAssociationType', 'ActiveRecord.Lib/ActiveRecord');
 
 class ActiveRecordAssociation {
 
+	/**
+	 *
+	 * @var string 
+	 */
 	protected $_name;
-	protected $_Association; // public part of the association
-	protected $_Record; // ActiveRecord that owns this association
+
+	/**
+	 * public part of the association
+	 * 
+	 * @var ActiveRecordAssociationCollection 
+	 */
+	protected $_Association;
+
+	/**
+	 * ActiveRecord that owns this association
+	 *
+	 * @var ActiveRecord 
+	 */
+	protected $_Record;
+
+	/**
+	 *
+	 * @var string 
+	 */
 	protected $_type;
+
+	/**
+	 *
+	 * @var Model 
+	 */
 	protected $_Model;
-	protected $_definition;  // definition of the association as defined in cakePHP
-	protected $_associated;  // Array of ActiveRecords associated to the $Record
-	protected $_changed = false;   // Set to true when the association has been modified
+
+	/**
+	 * definition of the association as defined in cakePHP
+	 *
+	 * @var array 
+	 */
+	protected $_definition;
+
+	/**
+	 * Array of ActiveRecords associated to the $Record
+	 *
+	 * @var array 
+	 */
+	protected $_associated;
+
+	/**
+	 * Set to true when the association has been modified
+	 *
+	 * @var bool 
+	 */
+	protected $_changed = false;
+
+	/**
+	 *
+	 * @var bool 
+	 */
 	protected $_initialized = false;
+
+	/**
+	 *
+	 * @var ActiveRecordAssociationType 
+	 */
 	protected $_AssociationStrategy = null;
 
 	public function __construct($name, ActiveRecord $Record, $type, $definition, $record, $checkRecord) {
@@ -47,7 +101,7 @@ class ActiveRecordAssociation {
 	}
 
 	public function setChanged($changed) {
-		$this->_changed = (bool) $changed;
+		$this->_changed = (bool)$changed;
 	}
 
 	public function isHasOne() {
@@ -67,7 +121,7 @@ class ActiveRecordAssociation {
 	}
 
 	public function setInitialized($initialized) {
-		$this->_initialized = (bool) $initialized;
+		$this->_initialized = (bool)$initialized;
 	}
 
 	public function getAssociated() {
@@ -201,6 +255,12 @@ class ActiveRecordAssociation {
 		$this->_initialized = true;
 	}
 
+	/**
+	 * 
+	 * @param array|ActiveRecordAssociationCollection $activeRecords
+	 * @param bool $isNew
+	 * @throws ActiveRecordException
+	 */
 	protected function _setAssociatedRecordsWithForeignKeys($activeRecords, $isNew = false) {
 		if ($activeRecords == null) {
 			$activeRecords = array();
@@ -216,9 +276,9 @@ class ActiveRecordAssociation {
 			$RecordOld = (count($this->_associated) === 1) ? $this->_associated[0] : null;
 			if ($RecordOld && $RecordNew) {
 				$this->replaceAssociatedRecord($RecordOld, $RecordNew);
-			} else if ($RecordOld === null && $RecordNew) {
+			} elseif ($RecordOld === null && $RecordNew) {
 				$this->addAssociatedRecord($RecordNew);
-			} else if ($RecordOld && $RecordNew === null) {
+			} elseif ($RecordOld && $RecordNew === null) {
 				$this->removeAssociatedRecord($RecordOld);
 			}
 		} else {

@@ -2,12 +2,10 @@
 
 /**
  * TagFixture
- *
  */
 class TTagFixture extends CakeTestFixture {
 
 	public $useDbConfig = 'test';
-//	public $import = array('table' => 'TTag', 'connection' => 'test');
 
 	/**
 	 * Fields
@@ -15,9 +13,10 @@ class TTagFixture extends CakeTestFixture {
 	 * @var array
 	 */
 	public $fields = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'length' => 10, 'key' => 'primary'),
-		'name' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 45, 'collate' => 'utf8_general_ci', 'charset' => 'utf8')
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 10, 'key' => 'primary'),
+		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 45, 'collate' => 'utf8_general_ci', 'charset' => 'utf8')
 	);
+
 	/**
 	 * Records
 	 *

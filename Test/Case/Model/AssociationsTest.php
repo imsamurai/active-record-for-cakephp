@@ -69,12 +69,14 @@ class AssociationsTest extends CakeTestCase {
 	/**
 	 * Test json Serialize
 	 *
-	 * @param array $array
-	 * @param string $result
+	 * @param string $message
+	 * @param array $post
+	 * @param string $messageKey
+	 * @param string $postKey
 	 *
 	 * @dataProvider serializeProvider
 	 */
-	public function testSerialize($message, $post, $message_key, $post_key) {
+	public function testSerialize($message, $post, $messageKey, $postKey) {
 		$ARTComment = new ARTComment($message);
 		$ARTPost = new ARTPost($post);
 
@@ -84,8 +86,8 @@ class AssociationsTest extends CakeTestCase {
 		$post = json_decode($post, true);
 		$message = json_decode($message, true);
 
-		$this->assertArrayHasKey($message_key, $message);
-		$this->assertArrayHasKey($post_key, $post);
+		$this->assertArrayHasKey($messageKey, $message);
+		$this->assertArrayHasKey($postKey, $post);
 	}
 
 	/**
@@ -98,7 +100,7 @@ class AssociationsTest extends CakeTestCase {
 		$data[] = array(array('message' => 'just json test', 'post_id' => 1), array('title' => 'json test', 'message' => '', 'writer_id' => 1), 'message', 'title');
 		return $data;
 	}
-	
+
 	/**
 	 * Test save when first record is associated with second record 
 	 * and second associated with first
@@ -110,7 +112,7 @@ class AssociationsTest extends CakeTestCase {
 		$ARTPost->Comments[] = $ARTComment;
 		$ARTPost->save();
 		$this->assertCount(1, $ARTPost->Comments);
-		
+
 		$ARTPost->id = 666;
 		$ARTPost->save();
 		$this->assertCount(1, $ARTPost->Comments);

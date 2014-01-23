@@ -9,36 +9,91 @@
 App::uses('ActiveRecordManager', 'ActiveRecord.Lib/ActiveRecord');
 App::uses('ActiveRecordAssociation', 'ActiveRecord.Lib/ActiveRecord');
 
-class ActiveRecord implements JsonSerializable{
+class ActiveRecord implements JsonSerializable {
 
-	private $_model_name;
-	private $_Model;
-	private $_Record = array();
-	private $_originalRecord = array();
-	private $_associations = array();  // Associated array: association name => _ActiveRecordAssociation object
-	private $_changed = false;
-	private $_created = false;
-	private $_deleted = false;
-	private $_removedFromAssociation = false;
-	private $_foreignKeys = array();
-	private $_directDelete = false;
+	/**
+	 *
+	 * @var string 
+	 */
+	protected $_modelName;
+
+	/**
+	 *
+	 * @var Model 
+	 */
+	protected $_Model;
+
+	/**
+	 *
+	 * @var array 
+	 */
+	protected $_Record = array();
+
+	/**
+	 *
+	 * @var array 
+	 */
+	protected $_originalRecord = array();
+
+	/**
+	 * Associated array: association name => _ActiveRecordAssociation object
+	 *
+	 * @var array 
+	 */
+	protected $_associations = array();
+
+	/**
+	 *
+	 * @var bool 
+	 */
+	protected $_changed = false;
+
+	/**
+	 *
+	 * @var bool 
+	 */
+	protected $_created = false;
+
+	/**
+	 *
+	 * @var bool 
+	 */
+	protected $_deleted = false;
+
+	/**
+	 *
+	 * @var bool 
+	 */
+	protected $_removedFromAssociation = false;
+
+	/**
+	 *
+	 * @var array 
+	 */
+	protected $_foreignKeys = array();
+
+	/**
+	 *
+	 * @var bool 
+	 */
+	protected $_directDelete = false;
 
 	public function __construct(array $record, array $options = null) {
 		if (isset($options['model'])) {
 			$this->_Model = $options['model'];
 		} else {
-			if (!empty($this->_model_name)) {
-				$modelName = $this->_model_name;
+			if (!empty($this->_modelName)) {
+				$modelName = $this->_modelName;
 			} else {
-				$class_name = get_class($this);
+				$className = get_class($this);
 				$prefix = ActiveRecordBehavior::$defaultSettings['prefix'];
-				if (substr($class_name, 0, strlen($prefix)) == $prefix) {
-					$modelName = substr($class_name, strlen($prefix));
+				if (substr($className, 0, strlen($prefix)) == $prefix) {
+					$modelName = substr($className, strlen($prefix));
 				} else {
-					$modelName = $class_name;
+					$modelName = $className;
 				}
 			}
-			$this->_model_name = $modelName;
+			$this->_modelName = $modelName;
 			App::import('Model', $modelName);
 			$this->_Model = ClassRegistry::init($modelName);
 		}
@@ -65,11 +120,11 @@ class ActiveRecord implements JsonSerializable{
 			$this->_changed = true;
 		}
 
-		foreach ($this->_Model->associations() as $association_type) {
-			foreach ($this->_Model->{$association_type} as $association_name => $association_definition) {
-				$association = new ActiveRecordAssociation($association_name, $this, $association_type, $association_definition, $record, $create);
-				$this->_associations[$association_name] = $association;
-				unset($this->_Record[$association_name]);
+		foreach ($this->_Model->associations() as $associationType) {
+			foreach ($this->_Model->{$associationType} as $associationName => $associationDefinition) {
+				$association = new ActiveRecordAssociation($associationName, $this, $associationType, $associationDefinition, $record, $create);
+				$this->_associations[$associationName] = $association;
+				unset($this->_Record[$associationName]);
 			}
 		}
 
@@ -78,20 +133,32 @@ class ActiveRecord implements JsonSerializable{
 		}
 	}
 
+	/**
+	 * 
+	 * @param string $name
+	 * @return mixed
+	 * @throws ActiveRecordException
+	 */
 	public function __get($name) {
 		if (array_key_exists($name, $this->_associations)) {
 			return $this->_associations[$name]->getActiveRecords();
-		} else if (array_key_exists($name, $this->_Record)) {
+		} elseif (array_key_exists($name, $this->_Record)) {
 			return $this->_Record[$name];
 		}
 
 		throw new ActiveRecordException('Undefined property via __get(): ' . $name);
 	}
 
+	/**
+	 * 
+	 * @param string $name
+	 * @param mixed $value
+	 * @throws ActiveRecordException
+	 */
 	public function __set($name, $value) {
 		if (array_key_exists($name, $this->_associations)) {
 			$this->_associations[$name]->setAssociatedRecords($value);
-		} else if (array_key_exists($name, $this->_Record)) {
+		} elseif (array_key_exists($name, $this->_Record)) {
 			$this->_Record[$name] = $value;
 			$this->setChanged();
 		} else {
@@ -122,15 +189,15 @@ class ActiveRecord implements JsonSerializable{
 				$this->_Record = $record;
 			}
 
-			foreach ($this->_associations as $association_name => $association) {
-				if (isset($record[$association_name])) {
-					$association->refresh($record[$association_name]);
+			foreach ($this->_associations as $associationName => $association) {
+				if (isset($record[$associationName])) {
+					$association->refresh($record[$associationName]);
 				} else {
 					$association->setInitialized(false);
 				}
 			}
 			$this->_resetState();
-		} else if (!empty($this->_Record[$this->getPrimaryKey()])) {
+		} elseif (!empty($this->_Record[$this->getPrimaryKey()])) {
 			$record = $this->_Model->find('first', array(
 				'recursive' => -1,
 				'conditions' => array($this->getPrimaryKey() => $this->_Record[$this->getPrimaryKey()])));
@@ -175,13 +242,13 @@ class ActiveRecord implements JsonSerializable{
 		return $this->_changed;
 	}
 
-	public function delete($from_association = false) {
+	public function delete($fromAssociation = false) {
 		$this->_deleted = true;
 		$this->_changed = true;
-		if ($from_association) {
+		if ($fromAssociation) {
 			$this->_removedFromAssociation = true;
 		}
-		
+
 		return $this;
 	}
 
@@ -202,24 +269,17 @@ class ActiveRecord implements JsonSerializable{
 		return $this;
 	}
 
-	//strange thing!
+	/**
+	 * strange thing!
+	 * 
+	 * @param ActiveRecordAssociation $Association
+	 * @param ActiveRecord $Record
+	 */
 	public function addForeignKey(ActiveRecordAssociation $Association, ActiveRecord $Record) {
 		$this->_foreignKeys[] = compact('Association', 'Record');
 		if ($Record->isCreated() && $this->isCreated()) {
 			ActiveRecordManager::create($this);
 			ActiveRecordManager::create($Record);
-
-			//$this must be created before $active_record
-//			$internal_id1 = $this->_internal_id;
-//			$internal_id2 = $active_record->_internal_id;
-//			if ($internal_id2 < $internal_id1) {
-//				// TODO: This is not a 100% waterproof solution...
-//				$this->_internal_id = $internal_id2;
-//				$active_record->_internal_id = $internal_id1;
-//
-//				self::$active_records_to_be_created[$internal_id1] = $active_record;
-//				self::$active_records_to_be_created[$internal_id2] = $this;
-//			}
 		}
 	}
 
@@ -304,8 +364,8 @@ class ActiveRecord implements JsonSerializable{
 		foreach ($this->_associations as $association) {
 			if ($association->isChanged() && $association->isHasAndBelongsToMany()) {
 				$this->_changed = true;
-				$associated_active_records = $association->getActiveRecords();
-				if (count($associated_active_records) == 0) {
+				$associatedActiveRecords = $association->getActiveRecords();
+				if (count($associatedActiveRecords) == 0) {
 					// All associated records must be delete in the join table
 					// Maybe not the most beautiful way to do it...
 					if (!is_null($association->getDefinition('joinTable')) && !is_null($association->getDefinition('foreignKey'))) {
@@ -318,9 +378,9 @@ class ActiveRecord implements JsonSerializable{
 					}
 				} else {
 					$records = array();
-					foreach ($associated_active_records as $associated_active_record) {
-						$associated_record = $associated_active_record->getRecord();
-						$records[] = $associated_record[$association->getPrimaryKey()];
+					foreach ($associatedActiveRecords as $associatedActiveRecord) {
+						$associatedRecord = $associatedActiveRecord->getRecord();
+						$records[] = $associatedRecord[$association->getPrimaryKey()];
 					}
 					$record[$association->getName()] = $records;
 				}

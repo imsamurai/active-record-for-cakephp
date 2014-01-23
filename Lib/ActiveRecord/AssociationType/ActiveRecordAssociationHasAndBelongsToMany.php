@@ -11,6 +11,7 @@ App::uses('ActiveRecordAssociationType', 'ActiveRecord.Lib/ActiveRecord/Associat
 class ActiveRecordAssociationHasAndBelongsToMany extends ActiveRecordAssociationType {
 
 	const TYPE = 'hasAndBelongsToMany';
+
 	public function setForeignKey(\ActiveRecord $Record = null) {
 		$this->_Association->getRecord()->setChanged();
 	}
@@ -18,4 +19,5 @@ class ActiveRecordAssociationHasAndBelongsToMany extends ActiveRecordAssociation
 	public function removeAssociatedRecord(ActiveRecord $Record) {
 		$this->_Association->getRecord()->setChanged();
 	}
+
 }

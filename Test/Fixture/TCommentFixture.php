@@ -2,12 +2,10 @@
 
 /**
  * CommentFixture
- *
  */
 class TCommentFixture extends CakeTestFixture {
 
 	public $useDbConfig = 'test';
-//	public $import = array('table' => 'TPost', 'connection' => 'test');
 
 	/**
 	 * Fields

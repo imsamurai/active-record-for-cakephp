@@ -8,8 +8,17 @@
  */
 abstract class ActiveRecordManager {
 
-	private static $_pool = array();
-	private static $_pendingCreate = array();
+	/**
+	 *
+	 * @var array 
+	 */
+	protected static $_pool = array();
+
+	/**
+	 *
+	 * @var array 
+	 */
+	protected static $_pendingCreate = array();
 
 	public static function delete(ActiveRecord $Record) {
 		unset(self::$_pool[$Record->getModel()->name][$Record->getPrimaryKey()]);
@@ -83,12 +92,19 @@ abstract class ActiveRecordManager {
 		return $result;
 	}
 
+	/**
+	 * 
+	 * @param Model $Model
+	 * @param array $record
+	 * @return ActiveRecord
+	 * @throws ActiveRecordException
+	 */
 	public static function getActiveRecord(Model $Model, array $record) {
 		if (count($record) == 0) {
 			return null;
-		} else if (isset($record[$Model->alias][$Model->primaryKey])) {
+		} elseif (isset($record[$Model->alias][$Model->primaryKey])) {
 			$id = $record[$Model->alias][$Model->primaryKey];
-		} else if (isset($record[$Model->primaryKey])) {
+		} elseif (isset($record[$Model->primaryKey])) {
 			$id = $record[$Model->primaryKey];
 		} else {
 			throw new ActiveRecordException('No primary key defined in record for model ' . $Model->name);
@@ -120,7 +136,7 @@ abstract class ActiveRecordManager {
 		if (isset($properties['model'])) {
 			$Model = $properties['model'];
 		}
-		$options = (array) $options + array('model' => $Model);
+		$options = (array)$options + array('model' => $Model);
 		return new $properties['name']($properties['record'], $options);
 	}
 
@@ -139,7 +155,6 @@ abstract class ActiveRecordManager {
 			}
 
 			foreach ($records['records'] as $Record) {
-//				if (!array_key_exists($Record->_internal_id, self::$_pendingCreate)) {
 				if (!static::pendingCreate($Record)) {
 					$recordsBySource[$records['sourceName']]['records'][] = $Record;
 				}

@@ -39,7 +39,9 @@ class TPostTestCase extends CakeTestCase {
 		$this->TProfile = ClassRegistry::init('TProfile');
 	}
 
-	// Update Post title
+	/**
+	 * Update Post title
+	 */
 	public function testUpdate() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$post->title = 'Test';
@@ -50,7 +52,9 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($post->title, 'Test');
 	}
 
-	// Delete a Post
+	/**
+	 * Delete a Post
+	 */
 	public function testDelete() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$post->delete();
@@ -62,7 +66,9 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($post, array());
 	}
 
-	// Delete a Post and update it: post must be deleted without being updated afterwards
+	/**
+	 * Delete a Post and update it: post must be deleted without being updated afterwards
+	 */
 	public function testDeleteAndUpdate() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$post->delete();
@@ -75,7 +81,9 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($post, array());
 	}
 
-	// Create a new Post
+	/**
+	 * Create a new Post
+	 */
 	public function testCreate() {
 		$post = new ARTPost(array('title' => 'TestTitle', 'message' => 'TestMessage', 'writer_id' => 1));
 		$post->save();
@@ -87,60 +95,66 @@ class TPostTestCase extends CakeTestCase {
 	}
 
 	public function testCreateAndDelete() {
-		$post_count = $this->TPost->find('count');
+		$postCount = $this->TPost->find('count');
 		$post = new ARTPost(array('title' => 'TestTitle', 'message' => 'TestMessage1', 'writer_id' => 1));
 		$post->delete();
 		$post->save();
-		$this->assertEquals($post_count, $this->TPost->find('count'));
+		$this->assertEquals($postCount, $this->TPost->find('count'));
 		$post = new ARTPost(array('title' => 'TestTitle', 'message' => 'TestMessage2', 'writer_id' => 1));
 		$post->delete();
 		ActiveRecordManager::saveAll();
-		$this->assertEquals($post_count, $this->TPost->find('count'));
+		$this->assertEquals($postCount, $this->TPost->find('count'));
 	}
 
-	// Update Post title, calls Refresh -> old title should be shown
-	// Update Post title, requery Post -> old title should be shown
+	/**
+	 * Update Post title, calls Refresh -> old title should be shown
+	 * Update Post title, requery Post -> old title should be shown
+	 */
 	public function testRefresh() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
-		$org_title = $post->title;
+		$orgTitle = $post->title;
 		$post->title = 'Test';
 		$post->refresh();
-		$this->assertEquals($post->title, $org_title);
+		$this->assertEquals($post->title, $orgTitle);
 		ActiveRecordManager::clearPool();
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$post->title = 'Test';
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
-		$this->assertEquals($post->title, $org_title);
+		$this->assertEquals($post->title, $orgTitle);
 	}
 
-	// Update Post Writer name, Refresh Post -> new Writer name should be shown
-	// Update Post Writer name, requery Post with association -> old writer name should be shown
+	/**
+	 * Update Post Writer name, Refresh Post -> new Writer name should be shown
+	 * Update Post Writer name, requery Post with association -> old writer name should be shown
+	 */
 	public function testRefreshAssociation() {
 		$post = $this->TPost->find('first', array('recursive' => 1, 'conditions' => array('TPost.id' => 1), 'activeRecord' => true));
-		$org_name = $post->Writer->name;
-		$new_name = 'TestName';
-		$post->Writer->name = $new_name;
+		$orgName = $post->Writer->name;
+		$newName = 'TestName';
+		$post->Writer->name = $newName;
 		$post->refresh();
-		$this->assertEquals($post->Writer->name, $new_name);
+		$this->assertEquals($post->Writer->name, $newName);
 		ActiveRecordManager::clearPool();
 		$post = $this->TPost->find('first', array('recursive' => 1, 'conditions' => array('TPost.id' => 1), 'activeRecord' => true));
-		$post->Writer->name = $new_name;
+		$post->Writer->name = $newName;
 		$post = $this->TPost->find('first', array('recursive' => 1, 'conditions' => array('TPost.id' => 1), 'activeRecord' => true));
-		$this->assertEquals($post->Writer->name, $org_name);
+		$this->assertEquals($post->Writer->name, $orgName);
 	}
 
 	public function testRefreshWithRecordsAssociation() {
 		$post = $this->TPost->find('first', array('recursive' => 1, 'conditions' => array('TPost.id' => 1), 'activeRecord' => true));
-		$org_name = $post->Writer->name;
-		$new_name = 'TestName';
-		$post->Writer->name = $new_name;
-		$post_records = $this->TPost->find('first', array('recursive' => 1, 'conditions' => array('TPost.id' => 1), 'activeRecord' => false));
-		$post->refresh($post_records);
-		$this->assertEquals($post->Writer->name, $org_name);
+		$orgName = $post->Writer->name;
+		$newName = 'TestName';
+		$post->Writer->name = $newName;
+		$postRecords = $this->TPost->find('first', array('recursive' => 1, 'conditions' => array('TPost.id' => 1), 'activeRecord' => false));
+		$post->refresh($postRecords);
+		$this->assertEquals($post->Writer->name, $orgName);
 	}
 
-	// Post belongs to a Writer
-	// Change the Writer of a Post
+	/**
+	 * Post belongs to a Writer
+	 * Change the Writer of a Post
+	 */
 	public function testSetBelongsTo() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertEquals($post->Writer->name, 'Name1');
@@ -153,12 +167,14 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($post->Writer->name, 'Name2');
 	}
 
-	// Writer may belong to a WriterGroup
-	// Set the WriterGroup of a Writer to null
+	/**
+	 * Writer may belong to a WriterGroup
+	 * Set the WriterGroup of a Writer to null
+	 */
 	public function testSetToNullBelongsTo() {
 		$writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertEquals($writer->WriterGroup->name, 'Group1');
-		$writer_group = $writer->WriterGroup;
+		$writerGroup = $writer->WriterGroup;
 		$writer->WriterGroup = null;
 		$this->assertNull($writer->WriterGroup);
 		$writer->save();
@@ -167,21 +183,23 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertNull($writer->WriterGroup);
 		$writer->WriterGroup = null;
 		$this->assertNull($writer->WriterGroup);
-		$writer->WriterGroup = $writer_group;
+		$writer->WriterGroup = $writerGroup;
 		$this->assertEquals($writer->WriterGroup->name, 'Group1');
 	}
 
-	// Comment belongs to a Post
-	// Change the Post of a Comment with a new Post record
+	/**
+	 * Comment belongs to a Post
+	 * Change the Post of a Comment with a new Post record
+	 */
 	public function testSetWithNew1BelongsTo() {
 		$comment = $this->TComment->find('first', array('recursive' => -1, 'conditions' => array('message' => 'Message1'), 'activeRecord' => true));
-		$old_post = $comment->Post;
-		$new_post = new ARTPost(array('Writer' => $old_post->Writer, 'title' => 'TestTitle', 'message' => 'TestMessage'));
-		$comment->Post = $new_post;
-		$this->assertEquals($new_post->save(), true);
+		$oldPost = $comment->Post;
+		$newPost = new ARTPost(array('Writer' => $oldPost->Writer, 'title' => 'TestTitle', 'message' => 'TestMessage'));
+		$comment->Post = $newPost;
+		$this->assertEquals($newPost->save(), true);
 		$this->assertEquals($comment->save(), true);
 		$this->assertEquals($comment->Post->title, 'TestTitle');
-		$this->assertEquals($new_post->Comments[0]->message, 'Message1');
+		$this->assertEquals($newPost->Comments[0]->message, 'Message1');
 		ActiveRecordManager::clearPool();
 		$comment = $this->TComment->find('first', array('recursive' => -1, 'conditions' => array('message' => 'Message1'), 'activeRecord' => true));
 		$this->assertEquals($comment->Post->title, 'TestTitle');
@@ -190,18 +208,20 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($post->Comments[0]->message, 'Message1');
 	}
 
-	// Comment belongs to a Post
-	// Post & Comment are both new records
+	/**
+	 * Comment belongs to a Post
+	 * Post & Comment are both new records
+	 */
 	public function testSetWithNew2BelongsTo() {
 		$writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
-		$new_post = new ARTPost(array('Writer' => $writer, 'title' => 'TestTitle', 'message' => 'TestMessage'));
-		$new_comment = new ARTComment(array(
+		$newPost = new ARTPost(array('Writer' => $writer, 'title' => 'TestTitle', 'message' => 'TestMessage'));
+		$newComment = new ARTComment(array(
 			'message' => 'TestMessage',
-			'Post' => $new_post));
-		$this->assertEquals($new_post->save(), true);
-		$this->assertEquals($new_comment->save(), true);
-		$this->assertEquals($new_post->Comments[0]->message, 'TestMessage');
-		$this->assertEquals($new_comment->Post->title, 'TestTitle');
+			'Post' => $newPost));
+		$this->assertEquals($newPost->save(), true);
+		$this->assertEquals($newComment->save(), true);
+		$this->assertEquals($newPost->Comments[0]->message, 'TestMessage');
+		$this->assertEquals($newComment->Post->title, 'TestTitle');
 		ActiveRecordManager::clearPool();
 		$comment = $this->TComment->find('first', array('recursive' => -1, 'conditions' => array('message' => 'TestMessage'), 'activeRecord' => true));
 		$this->assertEquals($comment->Post->title, 'TestTitle');
@@ -210,15 +230,17 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($post->Comments[0]->message, 'TestMessage');
 	}
 
-	// Writer has one Profile
-	// Change the Profile of a Writer
+	/**
+	 * Writer has one Profile
+	 * Change the Profile of a Writer
+	 */
 	public function testSetHasOne() {
 		$writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
-		$old_profile = $writer->Profile;
-		$this->assertEquals($old_profile->gender, 1);
-		$new_profile = $this->TProfile->find('first', array('recursive' => -1, 'conditions' => array('gender' => 0), 'activeRecord' => true));
-		$writer->Profile = $new_profile;
-		$old_profile->delete();
+		$oldProfile = $writer->Profile;
+		$this->assertEquals($oldProfile->gender, 1);
+		$newProfile = $this->TProfile->find('first', array('recursive' => -1, 'conditions' => array('gender' => 0), 'activeRecord' => true));
+		$writer->Profile = $newProfile;
+		$oldProfile->delete();
 		$this->assertEquals($writer->Profile->gender, 0);
 		ActiveRecordManager::saveAll();
 		ActiveRecordManager::clearPool();
@@ -226,28 +248,32 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($writer->Profile->gender, 0);
 	}
 
-	// Writer has one Profile with deleteWhenNotAssociated property set to true
-	// This time, we don't have to delete the old profile.
-	// Change the Profile of a Writer
+	/**
+	 * Writer has one Profile with deleteWhenNotAssociated property set to true
+	 * This time, we don't have to delete the old profile.
+	 * Change the Profile of a Writer
+	 */
 	public function testSetHasOneWithDelete() {
 		$this->TWriter->hasOne['Profile']['deleteWhenNotAssociated'] = true;
 		$writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
-		$old_profile = $writer->Profile;
-		$old_profile_id = $old_profile->id;
-		$this->assertEquals($old_profile->gender, 1);
-		$new_profile = $this->TProfile->find('first', array('recursive' => -1, 'conditions' => array('gender' => 0), 'activeRecord' => true));
-		$writer->Profile = $new_profile;
+		$oldProfile = $writer->Profile;
+		$oldProfileId = $oldProfile->id;
+		$this->assertEquals($oldProfile->gender, 1);
+		$newProfile = $this->TProfile->find('first', array('recursive' => -1, 'conditions' => array('gender' => 0), 'activeRecord' => true));
+		$writer->Profile = $newProfile;
 		$this->assertEquals($writer->Profile->gender, 0);
 		ActiveRecordManager::saveAll();
 		ActiveRecordManager::clearPool();
 		$writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertEquals($writer->Profile->gender, 0);
-		$profile = $this->TProfile->find('first', array('recursive' => -1, 'conditions' => array('id' => $old_profile_id), 'activeRecord' => true));
+		$profile = $this->TProfile->find('first', array('recursive' => -1, 'conditions' => array('id' => $oldProfileId), 'activeRecord' => true));
 		$this->assertEqual($profile, array());
 	}
 
-	// Writer may have one Profile
-	// Set the Profile of a Writer to null: this will delete the profile
+	/**
+	 * Writer may have one Profile
+	 * Set the Profile of a Writer to null: this will delete the profile
+	 */
 	public function testSetToNullHasOne() {
 		$this->TWriter->hasOne['Profile']['deleteWhenNotAssociated'] = true;
 		$writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
@@ -269,17 +295,19 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($writer->Profile->tel, $tel);
 	}
 
-	// Writer has one Profile
-	// Change the Profile of a Writer with a new Profile record
+	/**
+	 * Writer has one Profile
+	 * Change the Profile of a Writer with a new Profile record
+	 */
 	public function testSetWithNew1HasOne() {
 		$writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('name' => 'Name1'), 'activeRecord' => true));
-		$old_profile = $writer->Profile;
-		$old_profile->delete();
-		$new_profile = new ARTProfile(array('Writer' => $writer, 'gender' => 1, 'tel' => '888'));
-		$writer->Profile = $new_profile;
+		$oldProfile = $writer->Profile;
+		$oldProfile->delete();
+		$newProfile = new ARTProfile(array('Writer' => $writer, 'gender' => 1, 'tel' => '888'));
+		$writer->Profile = $newProfile;
 		$this->assertEquals(ActiveRecordManager::saveAll(), true);
 		$this->assertEquals($writer->Profile->tel, '888');
-		$this->assertEquals($new_profile->Writer->name, 'Name1');
+		$this->assertEquals($newProfile->Writer->name, 'Name1');
 		ActiveRecordManager::clearPool();
 		$writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('name' => 'Name1'), 'activeRecord' => true));
 		$this->assertEquals($writer->Profile->tel, '888');
@@ -288,18 +316,20 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($profile->Writer->name, 'Name1');
 	}
 
-	// Writer has one Profile
-	// Writer & Profile are both new records
+	/**
+	 * Writer has one Profile
+	 * Writer & Profile are both new records
+	 */
 	public function testSetWithNew2HasOne() {
-		$writer_group = $this->TWriterGroup->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
-		$new_profile = new ARTProfile(array('gender' => 1, 'tel' => '999'));
-		$new_writer = new ARTWriter(array(
+		$writerGroup = $this->TWriterGroup->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
+		$newProfile = new ARTProfile(array('gender' => 1, 'tel' => '999'));
+		$newWriter = new ARTWriter(array(
 			'name' => 'testUpdateWithNew2HasOne',
-			'WriterGroup' => $writer_group,
-			'Profile' => $new_profile));
+			'WriterGroup' => $writerGroup,
+			'Profile' => $newProfile));
 		$this->assertEquals(ActiveRecordManager::saveAll(), true);
-		$this->assertEquals($new_writer->Profile->tel, '999');
-		$this->assertEquals($new_profile->Writer->name, 'testUpdateWithNew2HasOne');
+		$this->assertEquals($newWriter->Profile->tel, '999');
+		$this->assertEquals($newProfile->Writer->name, 'testUpdateWithNew2HasOne');
 		ActiveRecordManager::clearPool();
 		$writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('name' => 'testUpdateWithNew2HasOne'), 'activeRecord' => true));
 		$this->assertEquals($writer->Profile->tel, '999');
@@ -308,8 +338,10 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($profile->Writer->name, 'testUpdateWithNew2HasOne', 'Profile has for Writer ' . $profile->Writer->name . ' instead of testUpdateWithNew2HasOne');
 	}
 
-	// Post has many Comments
-	// Update each message of the comments of one Post
+	/**
+	 * Post has many Comments
+	 * Update each message of the comments of one Post
+	 */
 	public function testUpdateHasMany() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertEquals(2, count($post->Comments));
@@ -325,9 +357,11 @@ class TPostTestCase extends CakeTestCase {
 		}
 	}
 
-	// A post has 0 or many comments
-	// Set the comments from Post1 to Post2
-	// -> Post1 loses its comments and Post2 gets the comments of Post1
+	/**
+	 * A post has 0 or many comments
+	 * Set the comments from Post1 to Post2
+	 * -> Post1 loses its comments and Post2 gets the comments of Post1
+	 */
 	public function testSetToExistingRecordsHasMany() {
 		$this->TPost->hasMany['Comments']['deleteWhenNotAssociated'] = true;
 		$post1 = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
@@ -335,9 +369,9 @@ class TPostTestCase extends CakeTestCase {
 		$tags1 = $post1->Comments;
 		$tags2 = $post2->Comments;
 		$count2 = count($post2->Comments);
-		$tag_names = array();
+		$tagNames = array();
 		foreach ($tags2 as $tag) {
-			$tag_names[] = $tag->message;
+			$tagNames[] = $tag->message;
 		}
 		$post1->Comments = $tags2;
 		ActiveRecordManager::saveAll();
@@ -346,14 +380,16 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($count2, count($post1->Comments));
 		$i = 0;
 		foreach ($post1->Comments as $tag) {
-			$this->assertEquals($tag_names[$i], $tag->message);
+			$this->assertEquals($tagNames[$i], $tag->message);
 			$i++;
 		}
 		$this->assertEquals(0, count($post2->Comments));
 	}
 
-	// A post has 0 or many comments
-	// Set the comments from a Post to an array of new comments
+	/**
+	 * A post has 0 or many comments
+	 * Set the comments from a Post to an array of new comments
+	 */
 	public function testSetToNewRecordsHasMany() {
 		$this->TPost->hasMany['Comments']['deleteWhenNotAssociated'] = true;
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
@@ -372,12 +408,14 @@ class TPostTestCase extends CakeTestCase {
 		}
 	}
 
-	// A post has 0 or many comments
-	// Take a post that has 2 comments
-	// Set the comments to this post to null : as the association has deleteWhenNotAssociated set to true, this
-	// will delete the 2 comments
-	// Save it and re-query again.
-	// Set the 2 old comments to the post: this will re-create the 2 comments.
+	/**
+	 * A post has 0 or many comments
+	 * Take a post that has 2 comments
+	 * Set the comments to this post to null : as the association has deleteWhenNotAssociated set to true, this
+	 * will delete the 2 comments
+	 * Save it and re-query again.
+	 * Set the 2 old comments to the post: this will re-create the 2 comments.
+	 */
 	public function testSetToNullHasMany() {
 		$this->TPost->hasMany['Comments']['deleteWhenNotAssociated'] = true;
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
@@ -389,31 +427,35 @@ class TPostTestCase extends CakeTestCase {
 		// its 2 records. So we have to keep these 2 records in another array.
 		$comments = array($comment1, $comment2);
 		$post->Comments = null;
-		$this->assertTrue(ActiveRecordManager::saveAll());   // This will delete the 2 comments
+		$this->assertTrue(ActiveRecordManager::saveAll()); // This will delete the 2 comments
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertEquals(count($post->Comments), 0);
 		$post->Comments = null;
 		$this->assertEquals(count($post->Comments), 0);
 		$post->Comments = $comments;
-		ActiveRecordManager::saveAll();					  // This will recreate the 2 comments
+		ActiveRecordManager::saveAll(); // This will recreate the 2 comments
 		ActiveRecordManager::clearPool();
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertEquals(count($post->Comments), 2);
 	}
 
-	// Update the association to null without having been initialized before:
-	// an association is initilized the first time it is called, but it must be
-	// also initialized when it is set without being first called.
+	/**
+	 * Update the association to null without having been initialized before:
+	 * an association is initilized the first time it is called, but it must be
+	 * also initialized when it is set without being first called.
+	 */
 	public function testSetToNull2HasMany() {
 		$this->TPost->hasMany['Comments']['deleteWhenNotAssociated'] = true;
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$post->Comments = null;
-		$this->assertTrue(ActiveRecordManager::saveAll());   // This will delete the 2 comments
+		$this->assertTrue(ActiveRecordManager::saveAll()); // This will delete the 2 comments
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertEquals(count($post->Comments), 0);
 	}
 
-	// Add a new Comment to a Post
+	/**
+	 * Add a new Comment to a Post
+	 */
 	public function testAddHasMany() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$post->Comments->add(new ARTComment(array('message' => 'Hallo')));
@@ -431,28 +473,32 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($found, true);
 	}
 
-	// Remove one Comment to a Post
+	/**
+	 * Remove one Comment to a Post
+	 */
 	public function testRemoveHasMany() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertEquals(count($post->Comments), 2);
-		$first_comment = $post->Comments[0];
-		$post->Comments->remove($first_comment);
+		$firstComment = $post->Comments[0];
+		$post->Comments->remove($firstComment);
 		$this->assertEquals(count($post->Comments), 1);
-		$first_comment->delete();
+		$firstComment->delete();
 		$this->assertEquals(ActiveRecordManager::saveAll(), true);
 		ActiveRecordManager::clearPool();
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertEquals(count($post->Comments), 1);
 	}
 
-	// Remove a new Comment to a Post
+	/**
+	 * Remove a new Comment to a Post
+	 */
 	public function testRemoveNewHasMany() {
 		$this->TPost->hasMany['Comments']['deleteWhenNotAssociated'] = true;
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$count = count($post->Comments);
-		$new_comment = new ARTComment(array('message' => 'TestRemoveNewHasMany'));
-		$post->Comments->add($new_comment);
-		$post->Comments->remove($new_comment);
+		$newComment = new ARTComment(array('message' => 'TestRemoveNewHasMany'));
+		$post->Comments->add($newComment);
+		$post->Comments->remove($newComment);
 		$this->assertTrue(ActiveRecordManager::saveAll());
 		$this->assertEquals($count, count($post->Comments));
 		ActiveRecordManager::clearPool();
@@ -460,31 +506,33 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($count, count($post->Comments));
 	}
 
-	// Replace one Comment by a new Comment in a Post
+	/**
+	 * Replace one Comment by a new Comment in a Post
+	 */
 	public function testReplaceHasMany() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertEquals(count($post->Comments), 2);
-		$first_comment = $post->Comments[0];
-		$old_message = $first_comment->message;
-		$new_message = 'Hello';
-		$post->Comments->replace($first_comment, new ARTComment(array('message' => $new_message)));
-		$first_comment->delete();
+		$firstComment = $post->Comments[0];
+		$oldMessage = $firstComment->message;
+		$newMessage = 'Hello';
+		$post->Comments->replace($firstComment, new ARTComment(array('message' => $newMessage)));
+		$firstComment->delete();
 		$post->saveAll();
 		ActiveRecordManager::clearPool();
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertEquals(count($post->Comments), 2);
-		$old_message_exists = false;
-		$new_message_exists = false;
+		$oldMessageExists = false;
+		$newMessageExists = false;
 		foreach ($post->Comments as $comment) {
-			if ($comment->message == $old_message) {
-				$old_message_exists = true;
+			if ($comment->message == $oldMessage) {
+				$oldMessageExists = true;
 			}
-			if ($comment->message == $new_message) {
-				$new_message_exists = true;
+			if ($comment->message == $newMessage) {
+				$newMessageExists = true;
 			}
 		}
-		$this->assertEquals($new_message_exists, true);
-		$this->assertEquals($old_message_exists, false);
+		$this->assertEquals($newMessageExists, true);
+		$this->assertEquals($oldMessageExists, false);
 	}
 
 	public function testSwitchRecordsInHasManyAssociation() {
@@ -517,8 +565,10 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($message2, $post1->Comments[0]->message);
 	}
 
-	// A Post has many Tags (and Tags has many Posts
-	// Update the name of all Tags of a Post
+	/**
+	 * A Post has many Tags (and Tags has many Posts
+	 * Update the name of all Tags of a Post
+	 */
 	public function testUpdateHBTM() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 2), 'activeRecord' => true));
 		$this->assertEquals(count($post->Tags), 2);
@@ -534,17 +584,19 @@ class TPostTestCase extends CakeTestCase {
 		}
 	}
 
-	// A Post has 0 or many Tags and a Tag has 0 or many Posts
-	// Set the Tags from Post1 to Post2
-	// -> Post1 keeps its Tags and Post2 gets the Tags of Post1
+	/**
+	 *  A Post has 0 or many Tags and a Tag has 0 or many Posts
+	 * Set the Tags from Post1 to Post2
+	 * -> Post1 keeps its Tags and Post2 gets the Tags of Post1
+	 */
 	public function testSetToExistingRecordsHBTM() {
 		$post1 = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$post2 = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 2), 'activeRecord' => true));
 		$tags2 = $post2->Tags;
 		$count = count($post2->Tags);
-		$tag_names = array();
+		$tagNames = array();
 		foreach ($tags2 as $tag) {
-			$tag_names[] = $tag->name;
+			$tagNames[] = $tag->name;
 		}
 		$post1->Tags = $tags2;
 		ActiveRecordManager::saveAll();
@@ -553,19 +605,21 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($count, count($post1->Tags));
 		$i = 0;
 		foreach ($post1->Tags as $tag) {
-			$this->assertEquals($tag_names[$i], $tag->name);
+			$this->assertEquals($tagNames[$i], $tag->name);
 			$i++;
 		}
 		$this->assertEquals($count, count($post2->Tags));
 		$i = 0;
 		foreach ($post2->Tags as $tag) {
-			$this->assertEquals($tag_names[$i], $tag->name);
+			$this->assertEquals($tagNames[$i], $tag->name);
 			$i++;
 		}
 	}
 
-	// A Post has 0 or many Tags and a Tag has 0 or many Posts
-	// Set the tags from a Post to an array of new tags
+	/**
+	 * A Post has 0 or many Tags and a Tag has 0 or many Posts
+	 * Set the tags from a Post to an array of new tags
+	 */
 	public function testSetToNewRecordsHBTM() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertGreaterThan(0, count($post->Tags));
@@ -583,7 +637,9 @@ class TPostTestCase extends CakeTestCase {
 		}
 	}
 
-	// Set the Tags of a Post to null
+	/**
+	 * Set the Tags of a Post to null
+	 */
 	public function testSetToNullHBTM() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 2), 'activeRecord' => true));
 		$this->assertEquals(count($post->Tags), 2);
@@ -608,8 +664,8 @@ class TPostTestCase extends CakeTestCase {
 
 	public function testAddHBTM() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 2), 'activeRecord' => true));
-		$new_name = 'Hallo';
-		$post->Tags->add(new ARTTag(array('name' => $new_name)));
+		$newName = 'Hallo';
+		$post->Tags->add(new ARTTag(array('name' => $newName)));
 		$this->assertEquals(count($post->Tags), 3);
 		$post->saveAll();
 		ActiveRecordManager::clearPool();
@@ -618,7 +674,7 @@ class TPostTestCase extends CakeTestCase {
 		$found = false;
 		foreach ($post->Tags as $tag) {
 			$name = $tag->name;
-			if ($tag->name == $new_name) {
+			if ($tag->name == $newName) {
 				$found = true;
 			}
 		}
@@ -639,64 +695,64 @@ class TPostTestCase extends CakeTestCase {
 		ActiveRecordManager::clearPool();
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 2), 'activeRecord' => true));
 		$this->assertEquals(count($post->Tags), 2);
-		$first_tag = $post->Tags[0];
-		$old_name = $first_tag->name;
-		$new_name = 'Hello';
-		$post->Tags->replace($first_tag, new ARTTag(array('name' => $new_name)));
+		$firstTag = $post->Tags[0];
+		$oldName = $firstTag->name;
+		$newName = 'Hello';
+		$post->Tags->replace($firstTag, new ARTTag(array('name' => $newName)));
 		$post->saveAll();
 		ActiveRecordManager::clearPool();
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 2), 'activeRecord' => true));
 		$this->assertEquals(count($post->Tags), 2);
-		$old_name_exists = false;
-		$new_name_exists = false;
+		$oldNameExists = false;
+		$newNameExists = false;
 		foreach ($post->Tags as $tag) {
-			if ($tag->name == $old_name) {
-				$old_name_exists = true;
+			if ($tag->name == $oldName) {
+				$oldNameExists = true;
 			}
-			if ($tag->name == $new_name) {
-				$new_name_exists = true;
+			if ($tag->name == $newName) {
+				$newNameExists = true;
 			}
 		}
-		$this->assertEquals($new_name_exists, true);
-		$this->assertEquals($old_name_exists, false);
+		$this->assertEquals($newNameExists, true);
+		$this->assertEquals($oldNameExists, false);
 	}
 
 	public function testUndoAll() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
-		$org_message = $post->message;
+		$orgMessage = $post->message;
 		$post->message = 'TestUndoAll';
-		$new_writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('id' => 2), 'activeRecord' => true));
-		$org_writer_name = $post->Writer->name;
-		$this->assertNotEquals($org_writer_name, $new_writer->name);
-		$post->Writer = $new_writer;
-		$org_comments_count = count($post->Comments);
+		$newWriter = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('id' => 2), 'activeRecord' => true));
+		$orgWriterName = $post->Writer->name;
+		$this->assertNotEquals($orgWriterName, $newWriter->name);
+		$post->Writer = $newWriter;
+		$orgCommentsCount = count($post->Comments);
 		$post->Comments->add(new ARTComment(array('message' => 'TestMessage')));
-		$org_tags_count = count($post->Tags);
-		$this->assertGreaterThan(0, $org_tags_count);
+		$orgTagsCount = count($post->Tags);
+		$this->assertGreaterThan(0, $orgTagsCount);
 		$post->Tags = null;
 
 		ActiveRecordManager::undoAll();
-		$this->assertEquals($org_message, $post->message);
-		$this->assertEquals($org_writer_name, $post->Writer->name);
-		$this->assertEquals($org_comments_count, count($post->Comments));
-		$this->assertEquals($org_tags_count, count($post->Tags));
+		$this->assertEquals($orgMessage, $post->message);
+		$this->assertEquals($orgWriterName, $post->Writer->name);
+		$this->assertEquals($orgCommentsCount, count($post->Comments));
+		$this->assertEquals($orgTagsCount, count($post->Tags));
 		ActiveRecordManager::saveAll();
-		$this->assertEquals($org_message, $post->message);
-		$this->assertEquals($org_writer_name, $post->Writer->name);
-		$this->assertEquals($org_comments_count, count($post->Comments));
-		$this->assertEquals($org_tags_count, count($post->Tags));
+		$this->assertEquals($orgMessage, $post->message);
+		$this->assertEquals($orgWriterName, $post->Writer->name);
+		$this->assertEquals($orgCommentsCount, count($post->Comments));
+		$this->assertEquals($orgTagsCount, count($post->Tags));
 	}
 
 	public function testCreateSaveAllAndUpdate() {
 		$post = new ARTPost(array('title' => 'TestTitle', 'message' => 'TestMessage', 'writer_id' => 1));
 		ActiveRecordManager::saveAll();
-		$new_title = 'Test2Title';
-		$post->title = $new_title;
+		$newTitle = 'Test2Title';
+		$post->title = $newTitle;
 		ActiveRecordManager::saveAll();
 		$id = $post->id;
 		ActiveRecordManager::clearPool();
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => $id), 'activeRecord' => true));
-		$this->assertEquals($new_title, $post->title);
+		$this->assertEquals($newTitle, $post->title);
 	}
 
 	/**

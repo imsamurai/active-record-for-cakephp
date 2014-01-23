@@ -86,11 +86,11 @@ abstract class ActiveRecordAssociationType {
 			case $this->isHasMany():
 			case $this->isHasAndBelongsToMany(): {
 					$associatedRecords = array();
-					foreach ($records as $related_record) {
-						if ($related_record instanceof ActiveRecord) {
-							$Record = $related_record;
+					foreach ($records as $relatedRecord) {
+						if ($relatedRecord instanceof ActiveRecord) {
+							$Record = $relatedRecord;
 						} else {
-							$Record = ActiveRecordManager::getActiveRecord($this->_Association->getModel(), $related_record);
+							$Record = ActiveRecordManager::getActiveRecord($this->_Association->getModel(), $relatedRecord);
 						}
 						$associatedRecords[] = $Record;
 					}

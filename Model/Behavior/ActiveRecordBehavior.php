@@ -8,9 +8,9 @@ class ActiveRecordBehavior extends ModelBehavior {
 
 	public static $defaultSettings = array(
 		'allFind' => true,
-			'directDelete' => false,
-			'prefix' => 'AR',
-			'subfolder' => 'ActiveRecord'
+		'directDelete' => false,
+		'prefix' => 'AR',
+		'subfolder' => 'ActiveRecord'
 	);
 	public $runtime = array();
 
@@ -46,7 +46,7 @@ class ActiveRecordBehavior extends ModelBehavior {
 				} else {
 					$records = array();
 				}
-			} else if ($Model->findQueryType == 'all') {
+			} elseif ($Model->findQueryType == 'all') {
 				$records = array();
 				foreach ($results as $result) {
 					$records[] = ActiveRecordManager::getActiveRecord($Model, $result);
@@ -81,4 +81,3 @@ class ActiveRecordBehavior extends ModelBehavior {
 	}
 
 }
-

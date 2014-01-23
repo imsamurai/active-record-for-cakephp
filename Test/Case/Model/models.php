@@ -24,8 +24,9 @@ class ActiveRecordAppModel extends Model {
 		'ActiveRecord.ActiveRecord' => array('allFind' => false, 'directDelete' => true));
 
 	public function beforeSave($options = array()) {
-		if (!empty($this->data[$this->alias]['timestamp']) && $this->data[$this->alias]['timestamp'] == 'CURRENT_TIMESTAMP')
+		if (!empty($this->data[$this->alias]['timestamp']) && $this->data[$this->alias]['timestamp'] == 'CURRENT_TIMESTAMP') {
 			unset($this->data[$this->alias]['timestamp']);
+		}
 		return true;
 	}
 
@@ -38,7 +39,7 @@ class ActiveRecordAppModel extends Model {
  * @property JoinPostTag $JoinPostTag
  */
 class TJoinPostTag extends ActiveRecordAppModel {
-
+	
 }
 
 /**
@@ -79,12 +80,24 @@ class TPost extends ActiveRecordAppModel {
 			'order' => ''
 		)
 	);
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @var array 
+	 */
 	public $hasMany = array(
 		'Comments' => array(
 			'className' => 'TComment',
 			'foreignKey' => 'post_id',
 		)
 	);
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @var array 
+	 */
 	public $hasAndBelongsToMany = array(
 		'Tags' => array(
 			'className' => 'TTag',
@@ -111,6 +124,7 @@ class TPost extends ActiveRecordAppModel {
  * @property Writer $Writer
  */
 class TComment extends ActiveRecordAppModel {
+
 	/**
 	 * Use database config
 	 *
@@ -132,6 +146,7 @@ class TComment extends ActiveRecordAppModel {
 			'order' => ''
 		)
 	);
+
 }
 
 /**
@@ -338,4 +353,3 @@ class TWriterGroup extends ActiveRecordAppModel {
 	);
 
 }
-
