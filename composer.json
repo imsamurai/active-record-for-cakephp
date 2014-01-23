@@ -1,0 +1,32 @@
+{
+  "name": "imsamurai/Active-Record-for-CakePHP",
+  "description": "Implementation of active record for CakePHP",
+  "type": "cakephp-plugin",
+  "keywords": [
+    "cakephp",
+    "active record",
+    "plugin",
+    "database"
+  ],
+  "homepage": "http://github.com/imsamurai/Active-Record-for-CakePHP",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Shamray Alexander",
+      "email": "im.samuray@gmail.com",
+      "homepage": "https://imsamurai.me",
+      "role": "Maintainer"
+    }
+  ],
+  "require": {
+    "composer/installers": "*"
+  },
+  "support": {
+    "email": "im.samuray@gmail.com",
+    "issues": "https://github.com/imsamurai/Active-Record-for-CakePHP/issues",
+    "source": "https://github.com/imsamurai/Active-Record-for-CakePHP"
+  },
+  "extra": {
+    "installer-name": "ActiveRecord"
+  }
+}
