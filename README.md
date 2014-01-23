@@ -1,15 +1,42 @@
-Active Record for CakePHP [![Build Status](https://travis-ci.org/imsamurai/Active-Record-for-CakePHP.png)](https://travis-ci.org/imsamurai/Active-Record-for-CakePHP)
+Active Record for CakePHP
 =========================
+
+[![Build Status](https://travis-ci.org/imsamurai/active-record-for-cakephp.png)](https://travis-ci.org/imsamurai/active-record-for-cakephp) [![Coverage Status](https://coveralls.io/repos/imsamurai/active-record-for-cakephp/badge.png?branch=master)](https://coveralls.io/r/imsamurai/active-record-for-cakephp?branch=master) [![Latest Stable Version](https://poser.pugx.org/imsamurai/active-record-for-cakephp/v/stable.png)](https://packagist.org/packages/imsamurai/active-record-for-cakephp) [![Total Downloads](https://poser.pugx.org/imsamurai/active-record-for-cakephp/downloads.png)](https://packagist.org/packages/imsamurai/active-record-for-cakephp) [![Latest Unstable Version](https://poser.pugx.org/imsamurai/active-record-for-cakephp/v/unstable.png)](https://packagist.org/packages/imsamurai/active-record-for-cakephp) [![License](https://poser.pugx.org/imsamurai/active-record-for-cakephp/license.png)](https://packagist.org/packages/imsamurai/active-record-for-cakephp)
 
 Installation
 ------------
 I wanted to build a state engine with CakePHP, and I realize that I needed a kind of Active Record pattern.
 So I first built a behavior that allows me to retrieve objects in place of associative arrays.
 
-I have tested this only with cakePHP 2.x
+I have tested this only with cakePHP 2.3.x, 2.4.x
+
+Composer (for ex. version 1.0.0):
+
+```javascript
+{
+	"require": {
+		"imsamurai/active-record-for-cakephp": "1.0.0"
+	}
+}
+```
+	
+it installs in `Plugin` directory (in same level with composer.json) so you may want to add `Plugin/Task` into ignore file.
+	
+or clone:
+
+	cd my_cake_app/app
+	git clone git://github.com/imsamurai/active-record-for-cakephp.git Plugin/ActiveRecord
+
+or if you use git add as submodule:
+
+	cd my_cake_app
+	git submodule add "git://github.com/imsamurai/active-record-for-cakephp.git" "app/Plugin/ActiveRecord"
+
+then add plugin loading in Config/bootstrap.php
+
+	CakePlugin::load('ActiveRecord', array('bootstrap' => true, 'routes' => false));
 
 To use it:
-* Copy the Model\Behavior\ActiveRecordBehavior.php in your Behavior folder
 * Tell your model to use it: $actsAs = array('ActiveRecord' => array(<options>))
 * When you use a find('all') or find('first) function, add the option 'activeRecord' => true
 
