@@ -12,6 +12,11 @@ class ActiveRecordBehavior extends ModelBehavior {
 		'prefix' => 'AR',
 		'subfolder' => 'ActiveRecord'
 	);
+	
+	/**
+	 *
+	 * @var array 
+	 */
 	public $runtime = array();
 
 	public function setup(Model $Model, $settings = array()) {
