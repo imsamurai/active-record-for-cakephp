@@ -82,7 +82,6 @@ class ActiveRecordAssociation {
 		$this->_Association = new ActiveRecordAssociationCollection($this);
 		$this->_Record = $Record;
 		$this->_type = $type;
-
 		$this->_Model = $Record->getModel()->{$name};
 		$this->_definition = $definition;
 		$this->_associated = array();

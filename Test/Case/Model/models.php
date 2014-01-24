@@ -131,6 +131,20 @@ class TComment extends ActiveRecordAppModel {
 	 * @var string
 	 */
 	public $useDbConfig = 'test';
+	
+	/**
+	 * Model name
+	 *
+	 * @var string
+	 */
+	public $name = 'TComment';
+	
+	/**
+	 * Model alias
+	 *
+	 * @var string
+	 */
+	public $alias = 'TComment';
 
 	/**
 	 * belongsTo associations
@@ -144,6 +158,30 @@ class TComment extends ActiveRecordAppModel {
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
+		)
+	);
+	
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @var array
+	 */
+	public $hasAndBelongsToMany = array(
+		'Parents' => array(
+			'className' => 'TComment',
+			'joinTable' => 't_comment_comments',
+			'foreignKey' => 'comment_id',
+			'associationForeignKey' => 'parent_comment_id',
+			'dependent' => true,
+			'unique' => 'keepExisting'
+		),
+		'Childrens' => array(
+			'className' => 'TComment',
+			'joinTable' => 't_comment_comments',
+			'foreignKey' => 'parent_comment_id',
+			'associationForeignKey' => 'comment_id',
+			'dependent' => true,
+			'unique' => 'keepExisting'
 		)
 	);
 

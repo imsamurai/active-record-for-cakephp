@@ -25,7 +25,8 @@ class AssociationsTest extends CakeTestCase {
 		'plugin.ActiveRecord.t_join_post_tag',
 		'plugin.ActiveRecord.t_profile',
 		'plugin.ActiveRecord.t_tag',
-		'plugin.ActiveRecord.t_comment'
+		'plugin.ActiveRecord.t_comment',
+		'plugin.ActiveRecord.t_comment_comment',
 	);
 
 	public function setUp() {
@@ -116,6 +117,58 @@ class AssociationsTest extends CakeTestCase {
 		$ARTPost->id = 666;
 		$ARTPost->save();
 		$this->assertCount(1, $ARTPost->Comments);
+	}
+	
+	/**
+	 * Test save with HABTM association
+	 */
+	public function testHABTM() {
+		$ARTPost = new ARTPost(array('title' => 'lala', 'message' => '', 'writer_id' => 1));
+		$Comment1 = new ARTComment(array('message' => 'coment1 lala1', 'post_id' => 0));
+		$Comment2 = new ARTComment(array('message' => 'coment1 lala2', 'post_id' => 0));
+		$Comment3 = new ARTComment(array('message' => 'coment1 lala3', 'post_id' => 0));
+		$Comment4 = new ARTComment(array('message' => 'coment1 lala4', 'post_id' => 0));
+		
+		$Comment1->Post = $ARTPost;
+		$Comment2->Post = $ARTPost;
+		$Comment3->Post = $ARTPost;
+		$Comment4->Post = $ARTPost;
+		$Comment2->Parents[] = $Comment1;
+		$Comment3->Parents[] = $Comment1;
+		$Comment4->Parents[] = $Comment3;
+		$Comment3->Childrens[] = $Comment4;
+		$Comment1->Childrens[] = $Comment3;
+		$Comment1->Childrens[] = $Comment2;		
+		
+		$Comment1->save();
+		$this->_assertHABTM($Comment1);
+		ActiveRecordManager::clearPool();
+		$this->_assertHABTM($Comment1);
+		$ARTComment = $this->TComment->find('first', array(
+			'conditions' => array(
+				'TComment.id' => $Comment1->id
+			),
+			'activeRecord' => true
+		));
+		$this->_assertHABTM($ARTComment);
+	}
+	
+	/**
+	 * Assertions for HABTM test
+	 */
+	protected function _assertHABTM($ARTComment) {
+		$this->assertSame($ARTComment->message, 'coment1 lala1');
+		debug($ARTComment->getRecord());
+		debug($ARTComment->Childrens[0]->getRecord());
+		debug($ARTComment->Childrens[1]->getRecord());
+		$this->assertCount(2, $ARTComment->Childrens);
+		$this->assertSame($ARTComment->Childrens[0]->message, 'coment1 lala3');
+		$this->assertSame($ARTComment->Childrens[1]->message, 'coment1 lala2');
+		$this->assertCount(1, $ARTComment->Childrens[0]->Parents);
+		$this->assertCount(1, $ARTComment->Childrens[1]->Parents);
+		$this->assertCount(1, $ARTComment->Childrens[0]->Childrens);
+		$this->assertCount(0, $ARTComment->Childrens[1]->Childrens);
+		$this->assertSame($ARTComment->Childrens[0]->Childrens[0]->message, 'coment1 lala4');
 	}
 
 }
