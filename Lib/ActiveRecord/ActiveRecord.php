@@ -379,12 +379,10 @@ class ActiveRecord implements JsonSerializable {
 				} else {
 					$records = array();
 					foreach ($associatedActiveRecords as $associatedActiveRecord) {
-						$id = $associatedActiveRecord->{$association->getPrimaryKey()};
-						if (is_null($id)) {
+						if ($associatedActiveRecord->_created) {
 							$associatedActiveRecord->save();
-							$id = $associatedActiveRecord->{$association->getPrimaryKey()};
 						}
-						$records[] = $id;
+						$records[] = $associatedActiveRecord->{$association->getPrimaryKey()};
 					}
 					$record[$association->getName()] = $records;
 				}
