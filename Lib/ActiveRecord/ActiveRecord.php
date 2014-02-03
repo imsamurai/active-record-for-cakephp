@@ -336,6 +336,18 @@ class ActiveRecord implements JsonSerializable {
 	public function jsonSerialize() {
 		return $this->_Record;
 	}
+	
+	/**
+	 * Copy record without associations and primary key
+	 * 
+	 * @return ActiveRecord
+	 */
+	public function copy() {
+		$that = $this->getModel()->createActiveRecord(
+				array($this->getModel()->primaryKey => null) + $this->_Record
+		);
+		return $that;
+	}
 
 	protected function _saveBelongsTo() {
 		foreach ($this->_associations as $Association) {
