@@ -34,7 +34,7 @@ before_script:
   - if [ "$PHPCS" != 1 ]; then
         echo "
             CakePlugin::load('ActiveRecord', array('bootstrap' => true, 'routes' => false));
-        " >> ../cakephp/app/Config/bootstrap.php
+        " >> ../cakephp/app/Config/bootstrap.php;
     fi
   - if [ "$PHPCS" == 1 ]; then
       rm -rf ~/.phpenv/versions/$(phpenv version-name)/pear/PHP/CodeSniffer/Standards/CakePHP;
