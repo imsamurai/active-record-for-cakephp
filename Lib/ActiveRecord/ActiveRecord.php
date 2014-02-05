@@ -313,14 +313,12 @@ class ActiveRecord implements JsonSerializable {
 			$this->_create(); // This reset the _changed property
 		}
 
+		$this->_resetState();
+		
 		$record = array($this->_Model->alias => $this->_Record);
 
 		$this->_saveHasMany();
 		$this->_saveHasAndBelongsToMany($record);
-
-		if (!$this->_changed) {
-			return true;
-		}
 
 		if ($result = $this->_Model->save($record)) {
 			$this->_Record = $result[$this->_Model->alias];
