@@ -102,7 +102,9 @@ class ActiveRecord implements JsonSerializable {
 		} else {
 			$this->_Record = $record;
 		}
-
+		$oldRecord = $this->_Record;
+		$this->refresh();
+		$this->_Record = $oldRecord + $this->_Record;
 		$schema = $this->_Model->schema();
 		$this->_Record += array_combine(array_keys($schema), Hash::extract($schema, '{s}.default'));
 
@@ -201,6 +203,9 @@ class ActiveRecord implements JsonSerializable {
 			$record = $this->_Model->find('first', array(
 				'recursive' => -1,
 				'conditions' => array($this->getPrimaryKey() => $this->_Record[$this->getPrimaryKey()])));
+			if (!$record) {
+				return $this;
+			}
 			$this->_Record = $record[$this->_Model->alias];
 			foreach ($this->_associations as $association) {
 				$association->setInitialized(false);
