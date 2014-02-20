@@ -202,7 +202,9 @@ class ActiveRecord implements JsonSerializable {
 		} elseif (!empty($this->_Record[$this->getPrimaryKey()])) {
 			$record = $this->_Model->find('first', array(
 				'recursive' => -1,
-				'conditions' => array($this->getPrimaryKey() => $this->_Record[$this->getPrimaryKey()])));
+				'conditions' => array($this->getPrimaryKey() => $this->_Record[$this->getPrimaryKey()]),
+				'activeRecord' => false
+			));
 			if (!$record) {
 				return $this;
 			}
