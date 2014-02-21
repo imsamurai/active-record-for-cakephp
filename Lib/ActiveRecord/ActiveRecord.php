@@ -320,7 +320,7 @@ class ActiveRecord implements JsonSerializable {
 			$this->_create(); // This reset the _changed property
 		}
 
-		$this->_resetState();
+		$this->_changed = false;
 		
 		$record = array($this->_Model->alias => $this->_Record);
 
@@ -379,33 +379,40 @@ class ActiveRecord implements JsonSerializable {
 
 	protected function _saveHasAndBelongsToMany(&$record) {
 		foreach ($this->_associations as $association) {
-			if ($association->isChanged() && $association->isHasAndBelongsToMany()) {
-				$this->_changed = true;
-				$associatedActiveRecords = $association->getActiveRecords();
-				if (count($associatedActiveRecords) == 0) {
-					// All associated records must be delete in the join table
-					// Maybe not the most beautiful way to do it...
-					if (!is_null($association->getDefinition('joinTable')) && !is_null($association->getDefinition('foreignKey'))) {
-						$this->_Model->getDataSource()->execute(
-								'DELETE FROM ' . $association->getDefinition('joinTable') .
-								' WHERE ' . $association->getDefinition('foreignKey') . ' = ' . $this->_Record[$this->getPrimaryKey()]);
-					} else {
-						// This should work according to CakePHP doc, but not with my version.
-						$records[$association->getName()] = array();
-					}
-				} else {
-					$records = array();
-					foreach ($associatedActiveRecords as $associatedActiveRecord) {
-						if ($associatedActiveRecord->_created) {
-							$associatedActiveRecord->save();
-						}
-						$records[] = $associatedActiveRecord->{$association->getPrimaryKey()};
-					}
-					$record[$association->getName()] = $records;
-				}
-				$association->setChanged(false);
+			if (!($association->isChanged() && $association->isHasAndBelongsToMany())) {
+				continue;
 			}
+			$this->_changed = true;
+			$associatedActiveRecords = $association->getActiveRecords();
+			if (count($associatedActiveRecords) === 0) {
+				// All associated records must be delete in the join table
+				// Maybe not the most beautiful way to do it...
+				$this->_Model->getDataSource()->execute(
+						'DELETE FROM ' . $association->getDefinition('joinTable') .
+						' WHERE ' . $association->getDefinition('foreignKey') . ' = ' . $this->_Record[$this->getPrimaryKey()]);
+			} else {
+				$records = $this->_createOrGetHABTMRecordKeys($associatedActiveRecords, $association->getPrimaryKey());
+				$record[$association->getName()] = $records;
+
+				$this->_Model->getDataSource()->execute(
+						'DELETE FROM ' . $association->getDefinition('joinTable') .
+						' WHERE ' . $association->getDefinition('foreignKey') . ' = ' . $this->_Record[$this->getPrimaryKey()] .
+						' AND ' . $association->getDefinition('associationForeignKey') . ' NOT IN (' . implode(',', $records) . ')'
+				);
+			}
+			$association->setChanged(false);
 		}
+	}
+	
+	protected function _createOrGetHABTMRecordKeys($associatedActiveRecords, $primaryKey) {
+		$records = array();
+		foreach ($associatedActiveRecords as $associatedActiveRecord) {
+			if ($associatedActiveRecord->_created) {
+				$associatedActiveRecord->save();
+			}
+			$records[] = $associatedActiveRecord->{$primaryKey};
+		}
+		return $records;
 	}
 
 	protected function _resetState() {
