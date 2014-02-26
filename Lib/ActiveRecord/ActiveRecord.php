@@ -382,7 +382,6 @@ class ActiveRecord implements JsonSerializable {
 		return new $class($this->_Record, array(
 			'model' => $this->getModel()
 		));
-		
 	}
 
 	protected function _saveBelongsTo() {
