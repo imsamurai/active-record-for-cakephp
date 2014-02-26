@@ -14,3 +14,6 @@ class ActiveRecordException extends Exception {
 	}
 
 }
+
+class ActiveRecordImmutableException extends Exception {
+}

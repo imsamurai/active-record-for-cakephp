@@ -95,5 +95,64 @@ class SaveTest extends CakeTestCase {
 		$this->assertEqual($FoundRecord->name, $FoundRecord->getName());
 		$this->assertEqual($FoundRecord->name2, $record['name2']);
 	}
+	
+	/**
+	 * Test immutable object
+	 */
+	public function testImmutable() {
+		$record = array(
+			'name2' => 'othername'
+		);
+		$Record = new ARTRecord($record);
+		$RecordImmutable = $Record->immutable();
+		$this->assertEquals($Record->name2, $RecordImmutable->name2);
+		$this->assertEquals($Record->getName(), $RecordImmutable->getName());
+	}
+	
+	/**
+	 * Test immutable object forbidden methods
+	 * 
+	 * @param string $method Method name
+	 * @param string $arguments Method arguments
+	 * 
+	 * @dataProvider immutableForbiddenProvider
+	 */
+	public function testImmutableForbidden($method, array $arguments = array()) {
+		$record = array(
+			'name2' => 'othername'
+		);
+		$Record = new ARTRecord($record);
+		$RecordImmutable = $Record->immutable();
+		$this->expectException('ActiveRecordImmutableException');
+		call_user_func_array(array($RecordImmutable, $method), $arguments);
+	}
+	
+	/**
+	 * Data provider for 
+	 * 
+	 * @return array
+	 */
+	public function immutableForbiddenProvider() {
+		return array(
+			array('delete'),
+			array('isChanged'),
+			array('isDeleted'),
+			array('isCreated'),
+			array('setChanged'),
+			array('undoAll'),
+			array('saveAll'),
+			array('undo'),
+			array('save'),
+			array('addForeignKey', array(
+				$this->getMock('ActiveRecordAssociation', array(), array(), '', false),
+				$this->getMock('ActiveRecord', array(), array(), '', false)				
+			)),
+			array('commit'),
+			array('rollback'),
+			array('begin'),
+			array('copy'),
+			array('beforeSave')
+		);
+	}
 
 }

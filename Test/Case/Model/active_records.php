@@ -12,33 +12,38 @@ $pluginRoot = dirname(dirname(dirname(dirname(__FILE__))));
 require_once $pluginRoot . DS . 'Model' . DS . 'Behavior' . DS . 'ActiveRecordBehavior.php';
 
 class ARTPost extends ActiveRecord {
-
+	
 }
 
 class ARTComment extends ActiveRecord {
-
+	
 }
 
 class ARTProfile extends ActiveRecord {
-
+	
 }
 
 class ARTTag extends ActiveRecord {
-
+	
 }
 
 class ARTWriter extends ActiveRecord {
-
+	
 }
 
 class ARTWriterGroup extends ActiveRecord {
-
+	
 }
 
 class ARTRecord extends ActiveRecord {
-	
+
 	public function getName() {
 		return 'i am record';
 	}
-	
+
+}
+
+class ARTRecordImmutable extends ARTRecord {
+
+	use ActiveRecordImmutableTrait;
 }

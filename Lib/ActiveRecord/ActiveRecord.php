@@ -8,6 +8,8 @@
  */
 App::uses('ActiveRecordManager', 'ActiveRecord.Lib/ActiveRecord');
 App::uses('ActiveRecordAssociation', 'ActiveRecord.Lib/ActiveRecord');
+App::uses('ActiveRecordImmutable', 'ActiveRecord.Lib/ActiveRecord');
+App::uses('ActiveRecordImmutableTrait', 'ActiveRecord.Lib/ActiveRecord');
 
 class ActiveRecord implements JsonSerializable {
 
@@ -133,6 +135,7 @@ class ActiveRecord implements JsonSerializable {
 		foreach ($this->_Record as $key => $value) {
 			$this->_originalRecord[$key] = $value;
 		}
+		App::uses(get_class($this) . 'Immutable', 'Model/' . $this->_Model->activeRecordBehaviorSettings('subfolder'));
 	}
 
 	/**
@@ -363,6 +366,23 @@ class ActiveRecord implements JsonSerializable {
 				$value = $this->{$method}();
 			}
 		}
+	}
+	
+	/**
+	 * Returns immutable active record
+	 * 
+	 * @return ActiveRecord
+	 */
+	public function immutable() {
+		$class = get_class($this) . 'Immutable';
+		if (!class_exists($class)) {
+			$class = 'ActiveRecordImmutable';
+		}
+		
+		return new $class($this->_Record, array(
+			'model' => $this->getModel()
+		));
+		
 	}
 
 	protected function _saveBelongsTo() {
