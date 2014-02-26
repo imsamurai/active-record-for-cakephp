@@ -391,3 +391,17 @@ class TWriterGroup extends ActiveRecordAppModel {
 	);
 
 }
+
+/**
+ * Record Model
+ */
+class TRecord extends ActiveRecordAppModel {
+
+	/**
+	 * Use database config
+	 *
+	 * @var string
+	 */
+	public $useDbConfig = 'test';
+
+}

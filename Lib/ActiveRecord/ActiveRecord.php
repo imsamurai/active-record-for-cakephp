@@ -303,9 +303,8 @@ class ActiveRecord implements JsonSerializable {
 	}
 
 	public function save() {
-		if (method_exists($this, 'beforeSave')) {
-			$this->beforeSave();
-		}
+		$this->beforeSave();
+			
 		if (!$this->_changed) {
 			return true;
 		}
@@ -352,6 +351,18 @@ class ActiveRecord implements JsonSerializable {
 				array($this->getModel()->primaryKey => null) + $this->_Record
 		);
 		return $that;
+	}
+	
+	/**
+	 * Before save handler
+	 */
+	public function beforeSave() {
+		foreach ($this->_Record as $key => &$value) {
+			$method = Inflector::camelize("get_$key");
+			if (method_exists($this, $method)) {
+				$value = $this->{$method}();
+			}
+		}
 	}
 
 	protected function _saveBelongsTo() {

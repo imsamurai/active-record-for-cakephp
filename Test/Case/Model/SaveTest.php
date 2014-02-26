@@ -25,7 +25,8 @@ class SaveTest extends CakeTestCase {
 	public $fixtures = array(
 		'plugin.ActiveRecord.t_post',
 		'plugin.ActiveRecord.t_writer',
-		'plugin.ActiveRecord.t_comment'
+		'plugin.ActiveRecord.t_comment',
+		'plugin.ActiveRecord.t_record',
 	);
 
 	/**
@@ -68,6 +69,31 @@ class SaveTest extends CakeTestCase {
 		foreach ($fieldsValues as $field => $value) {
 			$this->assertEqual($post['TPost'][$field], $value);
 		}
+	}
+	
+	/**
+	 * Test before save handler
+	 */
+	public function testBeforeSave() {
+		$record = array(
+			'name' => 'some name',
+			'name2' => 'othername'
+		);
+		$Record = new ARTRecord($record);
+		$this->assertEqual($Record->name, $record['name']);
+		$Record->save();		
+		$this->assertEqual($Record->name, $Record->getName());
+		$this->assertEqual($Record->name2, $record['name2']);
+		ActiveRecordManager::clearPool();
+		$FoundRecord = ClassRegistry::init('TRecord')->find('first', array(
+			'conditions' => array(
+				'id' => $Record->id
+			),
+			'activeRecord' => true
+		));
+
+		$this->assertEqual($FoundRecord->name, $FoundRecord->getName());
+		$this->assertEqual($FoundRecord->name2, $record['name2']);
 	}
 
 }

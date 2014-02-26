@@ -34,3 +34,9 @@ class ARTWriter extends ActiveRecord {
 class ARTWriterGroup extends ActiveRecord {
 
 }
+
+class ARTRecord extends ActiveRecord {
+	public function getName() {
+		return 'i am record';
+	}
+}
