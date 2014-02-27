@@ -360,12 +360,7 @@ class ActiveRecord implements JsonSerializable {
 	 * Before save handler
 	 */
 	public function beforeSave() {
-		foreach ($this->_Record as $key => &$value) {
-			$method = Inflector::camelize("get_$key");
-			if (method_exists($this, $method)) {
-				$value = $this->{$method}();
-			}
-		}
+		$this->_updateFieldsFromGetters();
 	}
 	
 	/**
@@ -382,6 +377,19 @@ class ActiveRecord implements JsonSerializable {
 		return new $class($this->_Record, array(
 			'model' => $this->getModel()
 		));
+	}
+	
+	/**
+	 * Search for all methods by pattern get<FieldName>, run it and replace field <FieldName>
+	 * value by method call result
+	 */
+	protected function _updateFieldsFromGetters() {
+		foreach ($this->_Record as $key => &$value) {
+			$method = Inflector::camelize("get_$key");
+			if (method_exists($this, $method)) {
+				$value = $this->{$method}();
+			}
+		}
 	}
 
 	protected function _saveBelongsTo() {
