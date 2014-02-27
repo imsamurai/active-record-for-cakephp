@@ -106,6 +106,7 @@ class SaveTest extends CakeTestCase {
 		$Record = new ARTRecord($record);
 		$RecordImmutable = $Record->immutable();
 		$this->assertEquals($Record->name2, $RecordImmutable->name2);
+		$this->assertEquals($Record->getName(), $RecordImmutable->name);
 		$this->assertEquals($Record->getName(), $RecordImmutable->getName());
 	}
 	

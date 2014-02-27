@@ -387,6 +387,10 @@ class ActiveRecord implements JsonSerializable {
 			$class = 'ActiveRecordImmutable';
 		}
 		
+		if (!$this->isExists()) {
+			$this->_updateFieldsFromGetters();
+		}
+		
 		return new $class($this->_Record, array(
 			'model' => $this->getModel()
 		));
