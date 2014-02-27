@@ -251,6 +251,19 @@ class ActiveRecord implements JsonSerializable {
 	public function isChanged() {
 		return $this->_changed;
 	}
+	
+	/**
+	 * Chack if record exist in db
+	 * 
+	 * @return bool
+	 */
+	public function isExists() {
+		$primaryKey = $this->_Record[$this->getPrimaryKey()];
+		if (!$primaryKey) {
+			return false;
+		}
+		return $this->getModel()->exists($primaryKey);
+	}
 
 	public function delete($fromAssociation = false) {
 		$this->_deleted = true;

@@ -154,5 +154,20 @@ class SaveTest extends CakeTestCase {
 			array('beforeSave')
 		);
 	}
+	
+	/**
+	 * Test isExists
+	 */
+	public function testIsExists() {
+		$name2 = 'name2';
+		$Record = new ARTRecord(compact('name2'));
+		$this->assertFalse($Record->isExists());
+		$Record->save();
+		$this->assertTrue($Record->isExists());
+		$id = $Record->id;
+		ActiveRecordManager::clearPool();
+		$Record2 = new ARTRecord(compact('id', 'name2'));
+		$this->assertTrue($Record2->isExists());
+	}
 
 }
