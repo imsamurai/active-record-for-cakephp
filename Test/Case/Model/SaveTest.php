@@ -194,7 +194,7 @@ class SaveTest extends CakeTestCase {
 		$this->assertEmpty($RecordNotRefreshed->name2);
 		$this->assertEqual($RecordNotRefreshed->id, $record['id']);
 		ActiveRecordManager::clearPool();
-		$RecordSaved =  ClassRegistry::init('TRecord')->find('first', array(
+		$RecordSaved = ClassRegistry::init('TRecord')->find('first', array(
 			'conditions' => array(
 				'id' => $record['id']
 			),
@@ -204,7 +204,7 @@ class SaveTest extends CakeTestCase {
 		$this->assertEmpty($RecordSaved->name2);
 		$this->assertEqual($RecordSaved->id, $record['id']);
 		ActiveRecordManager::clearPool();
-		$RecordSaved2 =  ClassRegistry::init('TRecord')->find('first', array(
+		$RecordSaved2 = ClassRegistry::init('TRecord')->find('first', array(
 			'conditions' => array(
 				'id' => $record['id']
 			),
