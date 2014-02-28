@@ -104,9 +104,13 @@ class ActiveRecord implements JsonSerializable {
 		} else {
 			$this->_Record = $record;
 		}
-		$oldRecord = $this->_Record;
-		$this->refresh();
-		$this->_Record = $oldRecord + $this->_Record;
+		
+		if (empty($options['norefresh'])) {
+			$oldRecord = $this->_Record;
+			$this->refresh();
+			$this->_Record = $oldRecord + $this->_Record;
+		}
+		
 		$schema = $this->_Model->schema();
 		$this->_Record += array_combine(array_keys($schema), Hash::extract($schema, '{s}.default'));
 

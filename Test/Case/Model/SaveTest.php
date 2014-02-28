@@ -170,5 +170,48 @@ class SaveTest extends CakeTestCase {
 		$Record2 = new ARTRecord(compact('id', 'name2'));
 		$this->assertTrue($Record2->isExists());
 	}
+	
+	/**
+	 * Test refresh on create
+	 */
+	public function testRefreshOnCreate() {
+		$record = array(
+			'name2' => 'dsfaedsjgfbdsjygfvb',
+			'id' => 100
+		);
+		$Record = new ARTRecord($record);
+		$Record->save();
+		ActiveRecordManager::clearPool();
+		$RecordRefreshed = new ARTRecord(array(
+			'id' => $record['id']
+		));
+		$this->assertEqual($RecordRefreshed->name2, $record['name2']);
+		$this->assertEqual($RecordRefreshed->id, $record['id']);
+		ActiveRecordManager::clearPool();
+		$RecordNotRefreshed = new ARTRecord(array(
+			'id' => $record['id']
+				), array('norefresh' => true));
+		$this->assertEmpty($RecordNotRefreshed->name2);
+		$this->assertEqual($RecordNotRefreshed->id, $record['id']);
+		ActiveRecordManager::clearPool();
+		$RecordSaved =  ClassRegistry::init('TRecord')->find('first', array(
+			'conditions' => array(
+				'id' => $record['id']
+			),
+			'fields' => array('id'),
+			'activeRecord' => true
+		));
+		$this->assertEmpty($RecordSaved->name2);
+		$this->assertEqual($RecordSaved->id, $record['id']);
+		ActiveRecordManager::clearPool();
+		$RecordSaved2 =  ClassRegistry::init('TRecord')->find('first', array(
+			'conditions' => array(
+				'id' => $record['id']
+			),
+			'activeRecord' => true
+		));
+		$this->assertEqual($RecordSaved2->name2, $record['name2']);
+		$this->assertEqual($RecordSaved2->id, $record['id']);
+	}
 
 }

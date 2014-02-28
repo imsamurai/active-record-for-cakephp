@@ -112,7 +112,7 @@ abstract class ActiveRecordManager {
 
 		$result = self::findActiveRecordInPool($Model, $id);
 		if ($result === false) {
-			$result = self::createActiveRecord($Model, $record, array('create' => false));
+			$result = self::createActiveRecord($Model, $record, array('create' => false, 'norefresh' => true));
 			if (!isset(self::$_pool[$Model->alias])) {
 				self::$_pool[$Model->alias] = array('records' => array(), 'model' => $Model, 'sourceName' => $Model->useDbConfig);
 			}
