@@ -21,7 +21,9 @@ abstract class ActiveRecordManager {
 	protected static $_pendingCreate = array();
 
 	public static function delete(ActiveRecord $Record) {
-		unset(self::$_pool[$Record->getModel()->name][$Record->getPrimaryKey()]);
+		$modelName = $Record->getModel()->name;
+		$primaryKey = $Record->getPrimaryKey();
+		unset(self::$_pool[$modelName][$primaryKey]);
 	}
 
 	public static function add(ActiveRecord $Record) {
