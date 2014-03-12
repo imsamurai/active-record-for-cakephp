@@ -34,6 +34,7 @@ before_script:
   - ../travis/before_script.sh
   - if [ "$PHPCS" != 1 ]; then
         echo "
+            require_once ROOT . 'vendor' . DS . 'phpunit' . DS . 'phpunit' . DS . 'PHPUnit' . DS . 'Autoload.php';
             CakePlugin::load('ActiveRecord', array('bootstrap' => true, 'routes' => false));
         " >> ../cakephp/app/Config/bootstrap.php;
     fi
