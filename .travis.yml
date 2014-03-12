@@ -34,6 +34,11 @@ before_script:
   - ../travis/before_script.sh
   - if [ "$PHPCS" != 1 ]; then
         echo "
+            App::build(array(
+                'vendors' => array(
+                    '~/.phpenv/versions/$(phpenv version-name)/pear/PHP'
+                )
+            ));
             CakePlugin::load('ActiveRecord', array('bootstrap' => true, 'routes' => false));
         " >> ../cakephp/app/Config/bootstrap.php;
     fi
