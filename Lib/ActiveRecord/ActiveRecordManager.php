@@ -23,7 +23,8 @@ abstract class ActiveRecordManager {
 	public static function delete(ActiveRecord $Record) {
 		$modelName = $Record->getModel()->name;
 		$primaryKey = $Record->getPrimaryKey();
-		unset(self::$_pool[$modelName][$primaryKey]);
+		$pool = &self::$_pool;
+		unset($pool[$modelName][$primaryKey]);
 	}
 
 	public static function add(ActiveRecord $Record) {
