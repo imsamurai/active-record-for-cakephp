@@ -6,6 +6,12 @@
  * Time: 17:51:57
  *
  */
+
+App::uses('ActiveRecordAssociationBelongsTo', 'ActiveRecord.Lib/ActiveRecord/AssociationType');
+App::uses('ActiveRecordAssociationHasMany', 'ActiveRecord.Lib/ActiveRecord/AssociationType');
+App::uses('ActiveRecordAssociationHasOne', 'ActiveRecord.Lib/ActiveRecord/AssociationType');
+App::uses('ActiveRecordAssociationHasAndBelongsToMany', 'ActiveRecord.Lib/ActiveRecord/AssociationType');
+
 abstract class ActiveRecordAssociationType {
 
 	protected $_Association = null;
@@ -23,8 +29,7 @@ abstract class ActiveRecordAssociationType {
 	 * @return ActiveRecordAssociationType
 	 */
 	public static function create($type, ActiveRecordAssociation $Association) {
-		$className = 'ActiveRecordAssociation' . Inflector::camelize($type);
-		App::uses($className, 'ActiveRecord.Lib/ActiveRecord/AssociationType');
+		$className = 'ActiveRecordAssociation' . ucfirst($type);
 		return new $className($Association);
 	}
 
