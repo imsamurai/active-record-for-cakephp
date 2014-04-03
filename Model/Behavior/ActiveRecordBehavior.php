@@ -20,9 +20,15 @@ class ActiveRecordBehavior extends ModelBehavior {
 	public $runtime = array();
 
 	public function setup(Model $Model, $settings = array()) {
-		$schema = $Model->schema();
 		$this->settings[$Model->alias] = $settings + static::$defaultSettings + array(
-			'defaults' => array_combine(array_keys($schema), Hash::extract($schema, '{s}.default'))
+			'defaults' => function() use ($Model) {
+				static $defaultFields = null;
+				if (is_null($defaultFields)) {
+					$schema = $Model->schema();
+					$defaultFields = array_combine(array_keys($schema), Hash::extract($schema, '{s}.default'));
+				}
+				return $defaultFields;
+			}
 		);
 	}
 

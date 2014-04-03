@@ -111,7 +111,8 @@ class ActiveRecord implements JsonSerializable {
 			$this->_Record = $oldRecord + $this->_Record;
 		}
 		
-		$this->_Record += $this->_Model->activeRecordBehaviorSettings('defaults');
+		$defaultFields = $this->_Model->activeRecordBehaviorSettings('defaults');
+		$this->_Record += $defaultFields();
 
 		$this->_directDelete = $this->_Model->activeRecordBehaviorSettings('directDelete');
 		if (isset($options['directDelete'])) {
