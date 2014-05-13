@@ -24,7 +24,7 @@ class ActiveRecordBehavior extends ModelBehavior {
 			'defaults' => function() use ($Model) {
 				static $defaultFields = null;
 				if (is_null($defaultFields)) {
-					$schema = $Model->schema();
+					$schema = (array)$Model->schema();
 					$defaultFields = array_combine(array_keys($schema), Hash::extract($schema, '{s}.default'));
 				}
 				return $defaultFields;
