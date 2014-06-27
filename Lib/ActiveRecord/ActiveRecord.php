@@ -323,8 +323,6 @@ class ActiveRecord implements JsonSerializable {
 	}
 
 	public function save() {
-		$this->beforeSave();
-			
 		if (!$this->_changed) {
 			return true;
 		}
@@ -332,6 +330,8 @@ class ActiveRecord implements JsonSerializable {
 		if ($this->_deleted) {
 			return $this->_delete();
 		}
+		
+		$this->beforeSave();
 
 		$this->_saveBelongsTo();
 
