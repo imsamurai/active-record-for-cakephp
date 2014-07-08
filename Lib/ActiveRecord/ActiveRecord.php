@@ -326,6 +326,8 @@ class ActiveRecord implements JsonSerializable {
 		if (!$this->_changed) {
 			return true;
 		}
+		
+		$this->_changed = false;
 
 		if ($this->_deleted) {
 			return $this->_delete();
@@ -338,8 +340,6 @@ class ActiveRecord implements JsonSerializable {
 		if ($this->_created) {
 			$this->_create(); // This reset the _changed property
 		}
-
-		$this->_changed = false;
 		
 		$record = array($this->_Model->alias => $this->_Record);
 
