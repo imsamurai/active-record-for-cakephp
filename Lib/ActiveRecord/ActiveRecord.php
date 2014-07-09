@@ -357,8 +357,15 @@ class ActiveRecord implements JsonSerializable {
 		}
 	}
 
+	/**
+	 * Json serialize
+	 * 
+	 * @return array
+	 */
 	public function jsonSerialize() {
-		return $this->_Record;
+		$record = $this->_Record;
+		ksort($record);
+		return $record;
 	}
 	
 	/**
