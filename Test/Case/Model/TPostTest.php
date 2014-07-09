@@ -108,7 +108,7 @@ class TPostTestCase extends CakeTestCase {
 
 	/**
 	 * Update Post title, calls Refresh -> old title should be shown
-	 * Update Post title, requery Post -> old title should be shown
+	 * Update Post title, requery Post -> new title should be shown (no refresh)
 	 */
 	public function testRefresh() {
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
@@ -118,14 +118,14 @@ class TPostTestCase extends CakeTestCase {
 		$this->assertEquals($post->title, $orgTitle);
 		ActiveRecordManager::clearPool();
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
-		$post->title = 'Test';
+		$orgTitle = $post->title = 'Test';
 		$post = $this->TPost->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
 		$this->assertEquals($post->title, $orgTitle);
 	}
 
 	/**
 	 * Update Post Writer name, Refresh Post -> new Writer name should be shown
-	 * Update Post Writer name, requery Post with association -> old writer name should be shown
+	 * Update Post Writer name, requery Post with association -> new writer name should be shown (no refresh)
 	 */
 	public function testRefreshAssociation() {
 		$post = $this->TPost->find('first', array('recursive' => 1, 'conditions' => array('TPost.id' => 1), 'activeRecord' => true));
@@ -138,7 +138,7 @@ class TPostTestCase extends CakeTestCase {
 		$post = $this->TPost->find('first', array('recursive' => 1, 'conditions' => array('TPost.id' => 1), 'activeRecord' => true));
 		$post->Writer->name = $newName;
 		$post = $this->TPost->find('first', array('recursive' => 1, 'conditions' => array('TPost.id' => 1), 'activeRecord' => true));
-		$this->assertEquals($post->Writer->name, $orgName);
+		$this->assertEquals($post->Writer->name, $newName);
 	}
 
 	public function testRefreshWithRecordsAssociation() {

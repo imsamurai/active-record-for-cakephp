@@ -105,9 +105,9 @@ class TWriterTestCase extends CakeTestCase {
 		$writerOrg->WriterGroup->name = 'Test';
 		$writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
 		$writerGroup = $this->TWriter->WriterGroup->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
-		$this->_checkARTWriter($writer, 1, 'Name1', 1);
-		$this->_checkARTWriterGroup($writerGroup, '1', 'Group1');
-		$this->_checkARTWriterGroup($writer->WriterGroup, '1', 'Group1');
+		$this->_checkARTWriter($writer, 1, 'Test', 1);
+		$this->_checkARTWriterGroup($writerGroup, '1', 'Test');
+		$this->_checkARTWriterGroup($writer->WriterGroup, '1', 'Test');
 	}
 
 	public function testAssociationHasOneDirect() {
@@ -130,9 +130,9 @@ class TWriterTestCase extends CakeTestCase {
 		$writerOrg->Profile->gender = 2;
 		$writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
 		$profile = $this->TWriter->Profile->find('first', array('recursive' => -1, 'conditions' => array('id' => 1), 'activeRecord' => true));
-		$this->_checkARTWriter($writer, 1, 'Name1', 1);
-		$this->_checkARTProfile($profile, '1', '1', '1', '123');
-		$this->_checkARTProfile($writer->Profile, '1', '1', '1', '123');
+		$this->_checkARTWriter($writer, 1, 'Test', 1);
+		$this->_checkARTProfile($profile, '1', '1', '2', '123');
+		$this->_checkARTProfile($writer->Profile, '1', '1', '2', '123');
 	}
 
 	public function testAssociationHasManyDirect() {
@@ -163,15 +163,15 @@ class TWriterTestCase extends CakeTestCase {
 		}
 		$writer = $this->TWriter->find('first', array('recursive' => -1, 'conditions' => array('TWriter.id' => 1), 'activeRecord' => true));
 		$posts = $this->TWriter->Posts->find('all', array('recursive' => -1, 'conditions' => array('writer_id' => 1), 'activeRecord' => true));
-		$this->_checkARTWriter($writer, 1, 'Name1', 1);
+		$this->_checkARTWriter($writer, 1, 'Test', 1);
 		$id = 1;
 		foreach ($posts as $post) {
-			$this->_checkARTPost($post, $id, '1', 'Title' . $id, 'Message' . $id);
+			$this->_checkARTPost($post, $id, '1', 'Test', 'Message' . $id);
 			$id++;
 		}
 		$id = 1;
 		foreach ($writer->Posts as $post) {
-			$this->_checkARTPost($post, $id, '1', 'Title' . $id, 'Message' . $id);
+			$this->_checkARTPost($post, $id, '1', 'Test', 'Message' . $id);
 			$id++;
 		}
 	}
