@@ -120,8 +120,6 @@ abstract class ActiveRecordManager {
 				self::$_pool[$Model->alias] = array('records' => array(), 'model' => $Model, 'sourceName' => $Model->useDbConfig);
 			}
 			self::$_pool[$Model->alias]['records'][$id] = $result;
-		} else {
-//			$result->refresh($record);
 		}
 		return $result;
 	}
