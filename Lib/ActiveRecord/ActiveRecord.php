@@ -450,20 +450,21 @@ class ActiveRecord implements JsonSerializable {
 			}
 			$this->_changed = true;
 			$associatedActiveRecords = $association->getActiveRecords();
+			$DataSource = $this->_Model->getDataSource();
+			
 			if (count($associatedActiveRecords) === 0) {
 				// All associated records must be delete in the join table
 				// Maybe not the most beautiful way to do it...
-				$this->_Model->getDataSource()->execute(
+				$DataSource->execute(
 						'DELETE FROM ' . $association->getDefinition('joinTable') .
-						' WHERE ' . $association->getDefinition('foreignKey') . ' = ' . $this->_Record[$this->getPrimaryKey()]);
+						' WHERE ' . $association->getDefinition('foreignKey') . ' = ' . $DataSource->value($this->_Record[$this->getPrimaryKey()]));
 			} else {
 				$records = $this->_createOrGetHABTMRecordKeys($associatedActiveRecords, $association->getPrimaryKey());
 				$record[$association->getName()] = $records;
-
-				$this->_Model->getDataSource()->execute(
+				$DataSource->execute(
 						'DELETE FROM ' . $association->getDefinition('joinTable') .
-						' WHERE ' . $association->getDefinition('foreignKey') . ' = ' . $this->_Record[$this->getPrimaryKey()] .
-						' AND ' . $association->getDefinition('associationForeignKey') . ' NOT IN (' . implode(',', $records) . ')'
+						' WHERE ' . $association->getDefinition('foreignKey') . ' = ' . $DataSource->value($this->_Record[$this->getPrimaryKey()]) .
+						' AND ' . $association->getDefinition('associationForeignKey') . ' NOT IN (' . implode(',', array_map(array($DataSource, 'value'), $records)) . ')'
 				);
 			}
 			$association->setChanged(false);
