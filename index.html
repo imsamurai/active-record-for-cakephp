@@ -1,0 +1,283 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>ActiveRecord fo CakePHP by imsamurai</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>ActiveRecord fo CakePHP</h1>
+        <p>Active Record pattern implementation for CakePHP</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/imsamurai/active-record-for-cakephp" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/imsamurai/active-record-for-cakephp/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/imsamurai/active-record-for-cakephp/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h2>
+<a id="abstract" class="anchor" href="#abstract" aria-hidden="true"><span class="octicon octicon-link"></span></a>Abstract</h2>
+
+<p><a href="https://travis-ci.org/imsamurai/active-record-for-cakephp"><img src="https://travis-ci.org/imsamurai/active-record-for-cakephp.png" alt="Build Status"></a> <a href="https://coveralls.io/r/imsamurai/active-record-for-cakephp?branch=master"><img src="https://coveralls.io/repos/imsamurai/active-record-for-cakephp/badge.png?branch=master" alt="Coverage Status"></a> <a href="https://packagist.org/packages/imsamurai/active-record-for-cakephp"><img src="https://poser.pugx.org/imsamurai/active-record-for-cakephp/v/stable.png" alt="Latest Stable Version"></a> <a href="https://packagist.org/packages/imsamurai/active-record-for-cakephp"><img src="https://poser.pugx.org/imsamurai/active-record-for-cakephp/downloads.png" alt="Total Downloads"></a> <a href="https://packagist.org/packages/imsamurai/active-record-for-cakephp"><img src="https://poser.pugx.org/imsamurai/active-record-for-cakephp/v/unstable.png" alt="Latest Unstable Version"></a> <a href="https://packagist.org/packages/imsamurai/active-record-for-cakephp"><img src="https://poser.pugx.org/imsamurai/active-record-for-cakephp/license.png" alt="License"></a></p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<hr>
+
+<p>I wanted to build a state engine with CakePHP, and I realize that I needed a kind of Active Record pattern.
+So I first built a behavior that allows me to retrieve objects in place of associative arrays.</p>
+
+<p>I have tested this only with cakePHP 2.3.x, 2.4.x</p>
+
+<p>Composer (for ex. version 1.0.0):</p>
+
+<div class="highlight highlight-javascript"><pre>{
+    <span class="s2">"require"</span><span class="o">:</span> {
+        <span class="s2">"imsamurai/active-record-for-cakephp"</span><span class="o">:</span> <span class="s2">"1.0.0"</span>
+    }
+}</pre></div>
+
+<p>it installs in <code>Plugin</code> directory (in same level with composer.json) so you may want to add <code>Plugin/Task</code> into ignore file.</p>
+
+<p>or clone:</p>
+
+<pre><code>cd my_cake_app/app
+git clone git://github.com/imsamurai/active-record-for-cakephp.git Plugin/ActiveRecord
+</code></pre>
+
+<p>or if you use git add as submodule:</p>
+
+<pre><code>cd my_cake_app
+git submodule add "git://github.com/imsamurai/active-record-for-cakephp.git" "app/Plugin/ActiveRecord"
+</code></pre>
+
+<p>then add plugin loading in Config/bootstrap.php</p>
+
+<pre><code>CakePlugin::load('ActiveRecord', array('bootstrap' =&gt; true, 'routes' =&gt; false));
+</code></pre>
+
+<p>To use it:</p>
+
+<ul>
+<li>Tell your model to use it: $actsAs = array('ActiveRecord' =&gt; array())</li>
+<li>When you use a find('all') or find('first) function, add the option 'activeRecord' =&gt; true</li>
+</ul>
+
+<p>I chose this way, because I did not want to retrieve always objects when a find function was called.
+But it is possible to use it in another way: add in the constructor of the behavior the option 'allFind' =&gt; true, and if you do not want an object after a find add 'activeRecord' =&gt; false (this possibility was not yet thouroughly tested: i'm afraid that cake generates sometimes a 'find' call that needs associative arrays).</p>
+
+<h2>
+<a id="how-to-use-it" class="anchor" href="#how-to-use-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to use it</h2>
+
+<hr>
+
+<p>When you retrieve an object record, you can use it in this way: assume that you have the following models:</p>
+
+<ul>
+<li>Post (title, message) belongsTo Writer, hasMany Comments, hasAndBelongsToMany Tags</li>
+<li>Writer (name) hasMany Posts, belongsTo WriterGroup</li>
+<li>WriterGroup (name) hasMany Writers</li>
+<li>Comment (message) belongsTo Post</li>
+<li>Tag (name) hasAndBelongsToMany Posts</li>
+</ul>
+
+<p>Call find('first') of find('all') to retrieve the posts and with one post you can do the following:</p>
+
+<ul>
+<li>$message = $post-&gt;message : this retrieves the message of the post</li>
+<li>$post-&gt;message = 'Hallo' : this updates the message of the post</li>
+<li>$writer = $post-&gt;Writer : this retrieves the writer ActiveRecord object</li>
+<li>$comments = $post-&gt;Comments : this retrieves the ActiveRecordAssociation object</li>
+</ul>
+
+<p>The Behavior makes a difference between belongsTo/hasOne associations and hasMany/hasAndBelongsToMany associations:</p>
+
+<ul>
+<li>with belongsTo and hasOne associations, the ActiveRecord object pointed by the association is retrieved, and you can use
+it directly: e.g. $post-&gt;Writer-&gt;WriterGroup-&gt;name</li>
+<li>
+<p>with hasMany and hasAndBelongsToMany associations, the ActiveRecordAssociation object is retrieved. The class of this object implements the IteratorAggregate, Countable and ArrayAccess interfaces so that you can use it as an array:</p>
+
+<ul>
+<li>foreach ($post-&gt;Comments as $comment) {}</li>
+<li>count($post-&gt;Comments);</li>
+<li>$comments = $post-&gt;Comments; $first_comment = $comments[0];</li>
+</ul>
+</li>
+</ul>
+
+<p>But also, the ActiveRecordAssociation class has 3 functions:</p>
+
+<ul>
+<li>$comments-&gt;add($new_comment);</li>
+<li>$comments-&gt;remove($first_comment);</li>
+<li>$comments-&gt;replace($first_comment, $new_comment);</li>
+</ul>
+
+<p>In order for the developer to clearly see the difference beween the 2 kinds of associations, I advice to use a plural name for hasMany and hasAndBelongsToMany associations, and singular name for hasOne and belongsTo associations.</p>
+
+<h2>
+<a id="extend-activerecord-class" class="anchor" href="#extend-activerecord-class" aria-hidden="true"><span class="octicon octicon-link"></span></a>Extend ActiveRecord class</h2>
+
+<hr>
+
+<p>Per default, the object you retrieve is of the class ActiveRecord. But you can of course extend this class for one model.
+Per default, the behavior will look for a class in the subfolder Model/ActiveRecord with name 'AR', e.g.: ARPost or ARComment (the prefix 'AR' and the subfolder name can be changed in the bahavior constructor options).
+In the file ARPost.php:</p>
+
+<pre><code>&lt;?php
+App::import('Model'.DS.'Behavior', 'ActiveRecord');
+
+class ARTPost extends ActiveRecord {
+    public $var;
+    public function func() {...}
+}
+?&gt;
+</code></pre>
+
+<p>If you need to use the constructor:</p>
+
+<pre><code>public function __construct(array $record, array $options = array()) {
+   parent::__construct($record, $options);
+   ...
+}
+</code></pre>
+
+<p>Then you can use $post-&gt;var and $post-&gt;func() in your code.
+You can also create new object:</p>
+
+<pre><code>$post = new ARPost(array(
+   'title' =&gt; 'My title',
+   'message' =&gt; 'OK',
+   'Writer' =&gt; $writer));
+</code></pre>
+
+<p>Here it becomes to be quite nice: in place of telling that the writer_id of the post should be <code>$writer-&gt;id</code>, you can directly say <code>'Writer' =&gt; $writer</code>
+You can also do:</p>
+
+<pre><code>$post-&gt;Comments = array($comment);
+</code></pre>
+
+<p>This will set automatically the <code>$comment-&gt;post_id</code> to the right one.</p>
+
+<h2>
+<a id="useful-functions" class="anchor" href="#useful-functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Useful functions</h2>
+
+<p>I realize that when using hasMany (or hasOne association), when you do</p>
+
+<pre><code>$post-&gt;Comments-&gt;remove($comment);
+</code></pre>
+
+<p>or</p>
+
+<pre><code>$post-&gt;Comments = null;
+</code></pre>
+
+<p>You want not only to remove the $comment from $post, but most of the time you want to delete $comment.
+I thought it would be quite handy if this is done automatically. For this, if you set in the association definition 'deleteWhenNotAssociated' to true, the behavior will automatically delete all records that are removed from the association.</p>
+
+<p>The behavior offers also the possibility to delete, refresh and undo an ActiveRecord:</p>
+
+<pre><code>$post-&gt;delete(); // delete this post record
+$post-&gt;refresh(); // query the values of post in the database.
+$post-&gt;undo(); // undo all modification done in the $post record.
+</code></pre>
+
+<p>The modifications done in the active records are not sent to the database. This is done only when calling the save() method.
+But $post-&gt;save() will only save the modification in the post record, not in its associated records. To save all modifications you made (explicitely and implicitely), use $post-&gt;saveAll() or ActiveRecord::saveAll() method
+Morevover saveAll() takes care that the records are saved in the right order. For example:</p>
+
+<pre><code>$comment = new ARComment(array('message' =&gt; 'New message'));
+$post = new ARPost(array('title' =&gt; 'New title', 'message' =&gt; 'New Message', 'Writer' =&gt; $writer));
+$post-&gt;Comment = array($comment);
+ActiveRecord::saveAll();
+</code></pre>
+
+<p>Then saveAll() takes care that $post is created first so that its id can be set to $comment-&gt;post_id.</p>
+
+<p>What is really nice with this Active Record pattern, is that you don't need anymore to bother about the keys and how you should construct the associated arrays to be sure that cakePHP will save correctly your data (especially with hasAndBelongsToMany associations!)</p>
+
+<h2>
+<a id="extending-even-more" class="anchor" href="#extending-even-more" aria-hidden="true"><span class="octicon octicon-link"></span></a>Extending even more</h2>
+
+<hr>
+
+<p>I needed also a possiblility to have subclasses of ActiveRecord. For example I had an Action model, but I needed to define subclasses for each kind of action. A subclass action may use a (sub) model or not.
+For this I told the behavior to check whether the Model has the function getActiveRecordProperties(), and if yes it calls it before it builds a new ActiveRecord.
+This function tells the behavior what is the real ActiveAction name it must call, with which model and with which data. Here an example:</p>
+
+<p>My model Action has a column type. This column will determine which kind of ActiveRecord class it must call.
+Then in the Action model, I have added this function:</p>
+
+<pre><code>public function getActiveRecordProperties(&amp;$record) {
+  $type = $record[$this-&gt;alias]['type'];
+  $name = 'AR' . $type . 'Action';
+  $model = $this;
+  App::import('Model'.DS.'ActiveRecord', $name);
+  return array('name' =&gt; $name, 'Record' =&gt; $record, 'Model' =&gt; $model);
+}
+</code></pre>
+
+<p>My ARAction looks like this:</p>
+
+<pre><code>abstract class ARAction extends AppActiveRecord {
+    abstract public function execute(ARUserState $user_state, $parameter);
+}
+</code></pre>
+
+<p>The SendEmail subaction looks like that:</p>
+
+<pre><code>class ARSendEmailAction extends ARAction {
+   public function execute(ARUserState $user_state, $parameter) {
+       ....
+   }
+}
+</code></pre>
+
+<p>Then if I have a record in my Action table with type 'SendEmail', Action-&gt;find() returns an object of Class ARSendEmailAction. When calling execute(), it will call the right one that will send an email.
+Here the ARSendEmailAction uses the same model as ARAction, but if needed I could have set it to another one.</p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/imsamurai">imsamurai</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-54309823-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
