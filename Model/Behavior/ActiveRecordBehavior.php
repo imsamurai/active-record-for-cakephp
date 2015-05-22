@@ -25,12 +25,15 @@ class ActiveRecordBehavior extends ModelBehavior {
 				static $defaultFields = null;
 				if (is_null($defaultFields)) {
 					$schema = $Model->schema();
+					$defaultFields = array();
 					if ($schema) {
-						$defaultFields = array_combine(array_keys($schema), Hash::extract($schema, '{s}.default'));
-					} else {
-						$defaultFields = array();
+						foreach ($schema as $field => $options) {
+							$defaultFields[$field] = isset($options['default']) ? $options['default'] : null;
+						}
+						$defaultFields += array(
+							$Model->primaryKey => null
+						);
 					}
-					
 				}
 				return $defaultFields;
 			}
